@@ -15,6 +15,25 @@ const numero = (valore, fallback = 0) => {
 
 const quota = valore => Math.min(1, Math.max(0, numero(valore)));
 
+export function calcolaConsumi(costi = {}) {
+  const consumi = costi.consumi || {};
+  const elettricita = Math.max(0, numero(consumi.elettricitaKwh))
+    * Math.max(0, numero(consumi.elettricitaTariffa));
+  const gas = Math.max(0, numero(consumi.gasSmc))
+    * Math.max(0, numero(consumi.gasTariffa));
+  const acqua = Math.max(0, numero(consumi.acquaAnnua));
+  const internet = Math.max(0, numero(consumi.internetMensile)) * 12;
+  const altro = Math.max(0, numero(consumi.altroAnnuo));
+  return {
+    elettricita,
+    gas,
+    acqua,
+    internet,
+    altro,
+    totale: elettricita + gas + acqua + internet + altro
+  };
+}
+
 export function calcolaImu(parametri) {
   if (!parametri.imuDovuta) return 0;
   return Math.max(0, numero(parametri.renditaCatastale))
@@ -34,10 +53,16 @@ export function calcolaScenari(parametri) {
   const accordoPresente = parametri.accordoTerritoriale !== 'assente';
   const accordoVerificato = parametri.accordoTerritoriale === 'verificato';
   const altaTensione = parametri.altaTensione === 'si';
+  const costi = parametri.costi || {};
+  const condominio = Math.max(0, numero(costi.condominioAnnuo));
+  const manutenzione = Math.max(0, numero(costi.manutenzioneAnnua));
+  const condominioLungo = condominio * quota(costi.quotaCondominioLungo);
+  const maggiorazioneUsuraBreve = quota(costi.maggiorazioneUsuraBreve);
+  const consumi = calcolaConsumi(costi);
 
   const p44 = parametri.lib44;
   const ricavi44 = Math.max(0, numero(p44.canone)) * Math.min(12, Math.max(0, numero(p44.mesi)));
-  const costi44 = Math.max(0, numero(p44.condominio)) + Math.max(0, numero(p44.manutenzione));
+  const costi44 = condominioLungo + manutenzione;
   const lib44 = chiudiScenario({
     k: 'lib44',
     nome: '4+4 libero',
@@ -52,13 +77,16 @@ export function calcolaScenari(parametri) {
       mesi: Math.min(12, Math.max(0, numero(p44.mesi))),
       canone: Math.max(0, numero(p44.canone)),
       costiPercentuali: 0,
-      costiFissi: costi44
+      costiFissi: costi44,
+      condominio: condominioLungo,
+      manutenzione,
+      utenze: 0
     }
   }, valoreImmobile);
 
   const pc = parametri.conc;
   const ricaviC = Math.max(0, numero(pc.canone)) * Math.min(12, Math.max(0, numero(pc.mesi)));
-  const costiC = Math.max(0, numero(pc.condominio)) + Math.max(0, numero(pc.manutenzione));
+  const costiC = condominioLungo + manutenzione;
   const contrattoConcordatoValido = accordoPresente && Boolean(pc.attestato);
   const aliquotaC = contrattoConcordatoValido && altaTensione
     ? FISCO.cedolareConcordato
@@ -83,6 +111,9 @@ export function calcolaScenari(parametri) {
       canone: Math.max(0, numero(pc.canone)),
       costiPercentuali: 0,
       costiFissi: costiC,
+      condominio: condominioLungo,
+      manutenzione,
+      utenze: 0,
       aliquota: aliquotaC
     }
   }, valoreImmobile);
@@ -90,9 +121,8 @@ export function calcolaScenari(parametri) {
   const pm = parametri.medio;
   const ricaviM = Math.max(0, numero(pm.canone)) * Math.min(12, Math.max(0, numero(pm.mesi)));
   const gestioneM = ricaviM * quota(pm.gestione);
-  const costiFissiM = Math.max(0, numero(pm.utenze))
-    + Math.max(0, numero(pm.condominio))
-    + Math.max(0, numero(pm.manutenzione));
+  const utenzeM = pm.utenzeIncluse ? consumi.totale : 0;
+  const costiFissiM = utenzeM + condominio + manutenzione;
   const transitorioConcordatoValido = Boolean(pm.concordato) && accordoPresente && Boolean(pm.attestato);
   const aliquotaM = transitorioConcordatoValido && altaTensione
     ? FISCO.cedolareConcordato
@@ -116,6 +146,9 @@ export function calcolaScenari(parametri) {
       canone: Math.max(0, numero(pm.canone)),
       costiPercentuali: gestioneM,
       costiFissi: costiFissiM,
+      condominio,
+      manutenzione,
+      utenze: utenzeM,
       aliquota: aliquotaM
     }
   }, valoreImmobile);
@@ -130,9 +163,8 @@ export function calcolaScenari(parametri) {
   const ricaviB = ricaviPernottamentiB + ricaviPulizieB;
   const costiPercentualiB = ricaviB * (quota(pb.ota) + quota(pb.gestione));
   const pulizieB = soggiorniB * Math.max(0, numero(pb.puliziaCosto));
-  const costiFissiB = Math.max(0, numero(pb.utenze))
-    + Math.max(0, numero(pb.condominio))
-    + Math.max(0, numero(pb.manutenzione));
+  const manutenzioneB = manutenzione * (1 + maggiorazioneUsuraBreve);
+  const costiFissiB = consumi.totale + condominio + manutenzioneB;
   const aliquotaB = pb.regime === '26' ? FISCO.cedolareBreveOrdinaria : FISCO.cedolareBreveAgevolata;
   const breveConsentito = parametri.regoleTuristiche !== 'vietato' && pb.regime !== 'impresa';
   const avvisiB = [];
@@ -158,11 +190,14 @@ export function calcolaScenari(parametri) {
       costiPercentuali: costiPercentualiB,
       pulizie: pulizieB,
       costiFissi: costiFissiB,
+      condominio,
+      manutenzione: manutenzioneB,
+      utenze: consumi.totale,
       aliquota: aliquotaB
     }
   }, valoreImmobile);
 
-  return { lib44, conc, medio, breve, imuPiena };
+  return { lib44, conc, medio, breve, imuPiena, consumi };
 }
 
 function conVariabile(parametri, chiave, valore) {

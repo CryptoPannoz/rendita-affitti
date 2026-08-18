@@ -108,6 +108,25 @@
     .local-card b { display: block; margin-top: 8px; font-size: .86rem; }
     .local-card small { display: block; margin-top: 5px; color: var(--muted); font-size: .62rem; line-height: 1.45; }
 
+    .cost-workbench { display: grid; grid-template-columns: .8fr 1.2fr; gap: 12px; margin-top: 14px; }
+    .cost-panel { padding: 18px; border: 1px solid var(--line); border-radius: 17px; background: #faf9f4; }
+    .cost-panel__head { display: flex; justify-content: space-between; gap: 14px; align-items: start; margin-bottom: 15px; }
+    .cost-panel__head h3 { margin: 0 0 4px; font-size: .98rem; letter-spacing: -.025em; }
+    .cost-panel__head p { max-width: 46ch; margin: 0; color: var(--muted); font-size: .65rem; line-height: 1.45; }
+    .cost-panel .fields { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .consumption-lines { display: grid; gap: 9px; }
+    .consumption-line { display: grid; grid-template-columns: 86px minmax(0, 1fr) 18px minmax(0, 1fr) 76px; gap: 7px; align-items: end; }
+    .consumption-line > span { align-self: center; font-size: .68rem; font-weight: 650; }
+    .consumption-line .field-name { min-height: 16px; margin-bottom: 3px; color: var(--muted); font: .55rem var(--mono); }
+    .consumption-line .field input { min-height: 38px; padding: 7px 9px; background: white; }
+    .consumption-line .operator { align-self: center; color: var(--muted); font: .65rem var(--mono); text-align: center; }
+    .consumption-line output { align-self: center; color: var(--ink); font: 500 .66rem var(--mono); text-align: right; white-space: nowrap; }
+    .consumption-fixed { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 11px; }
+    .consumption-total { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; margin-top: 14px; padding: 13px 14px; border-radius: 12px; background: var(--ink); color: white; }
+    .consumption-total span { color: rgba(255,255,255,.7); font: .58rem var(--mono); text-transform: uppercase; letter-spacing: .06em; }
+    .consumption-total b { font-size: 1.05rem; }
+    .consumption-total small { color: rgba(255,255,255,.68); font: .58rem var(--mono); }
+
     .step--scenarios { padding: 0; border: 0; background: transparent; }
     .step--scenarios > .step__head { padding: 28px 28px 8px; }
     .verdict { margin-bottom: 14px; padding: 27px 28px; border-radius: var(--radius-lg); background: var(--ink); color: white; }
@@ -117,8 +136,8 @@
     .verdict p { max-width: 74ch; margin: 13px 0 0; color: rgba(255,255,255,.78); font-size: .76rem; }
     .verdict .caution { color: #ffd6ca; }
 
-    .scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
-    .scenario { --accent: var(--lib44); overflow: hidden; border: 1px solid var(--line); border-top: 5px solid var(--accent); border-radius: var(--radius-lg); background: var(--white); }
+    .scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
+    .scenario { --accent: var(--lib44); display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-top: 5px solid var(--accent); border-radius: var(--radius-lg); background: var(--white); }
     .scenario[data-k="conc"] { --accent: var(--conc); }
     .scenario[data-k="medio"] { --accent: var(--medio); }
     .scenario[data-k="breve"] { --accent: var(--breve); }
@@ -132,7 +151,8 @@
     .scenario .field input, .scenario .field select { min-height: 40px; background: #f7f5ef; }
     .check { grid-column: 1 / -1; display: flex; gap: 9px; align-items: flex-start; padding: 10px 11px; border: 1px solid var(--line); border-radius: 11px; background: #faf9f4; font-size: .67rem; line-height: 1.4; }
     .check input { flex: none; width: 17px; height: 17px; margin: 1px 0 0; accent-color: var(--accent); }
-    .scenario__result { padding: 17px 20px 18px; border-top: 1px solid var(--line); background: #faf9f4; }
+    .scenario__result { padding: 17px 20px 18px; border-bottom: 1px solid var(--line); background: #faf9f4; }
+    .scenario.win .scenario__result { background: #f5fddf; }
     .net { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; }
     .net b { font-size: 1.75rem; line-height: 1; letter-spacing: -.045em; }
     .net span { color: var(--muted); font: .62rem var(--mono); text-align: right; }
@@ -143,7 +163,13 @@
     .details { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: .67rem; }
     .details td { padding: 5px 0; border-top: 1px solid var(--line); }
     .details td:last-child { text-align: right; font: .63rem var(--mono); }
-    .scenario-warning { margin: 11px 0 0; color: #8b3b20; font-size: .61rem; line-height: 1.4; }
+    .scenario__math { margin: auto 20px 16px; border-top: 1px solid var(--line); }
+    .scenario__math summary { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0 0; color: var(--muted); cursor: pointer; list-style: none; font: .59rem var(--mono); }
+    .scenario__math summary::-webkit-details-marker { display: none; }
+    .scenario__math summary::after { content: "+"; color: var(--accent); font-size: .8rem; }
+    .scenario__math[open] summary::after { content: "−"; }
+    .scenario-warning { margin: 11px 20px 17px; color: #8b3b20; font-size: .61rem; line-height: 1.4; }
+    .scenario-warning:empty { display: none; }
 
     .comparison { margin-top: 14px; padding: 24px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--white); }
     .comparison h3 { margin-bottom: 5px; font-size: 1.1rem; }
@@ -175,6 +201,7 @@
     @media (max-width: 920px) {
       .hero__grid { grid-template-columns: 1fr; gap: 20px; }
       .fields { grid-template-columns: 1fr 1fr; }
+      .cost-workbench { grid-template-columns: 1fr; }
       .local-grid { grid-template-columns: 1fr; }
       .step__head { display: block; }
       .step__head .step__aside { margin-top: 10px; }
@@ -192,8 +219,15 @@
       .fields { grid-template-columns: 1fr; }
       .field.wide { grid-column: auto; }
       .market-note { grid-template-columns: 1fr; }
+      .cost-panel { padding: 15px; }
+      .cost-panel .fields, .consumption-fixed { grid-template-columns: 1fr 1fr; }
+      .consumption-line { grid-template-columns: 70px minmax(0, 1fr) 14px minmax(0, 1fr); }
+      .consumption-line output { grid-column: 2 / -1; padding-top: 2px; }
       .scenario__inputs { padding-inline: 16px; }
+      .scenario__inputs { grid-template-columns: 1fr; }
       .scenario__head, .scenario__result { padding-inline: 16px; }
+      .scenario__math { margin-inline: 16px; }
+      .scenario-warning { margin-inline: 16px; }
       .bar-row { grid-template-columns: 96px 1fr 72px; gap: 8px; }
       .comparison { padding: 18px 15px; }
     }
@@ -256,11 +290,50 @@
           <div class="local-card"><span>Canone concordato</span><b id="local-accordo">Da verificare</b><small>Servono accordo e, quando richiesta, assistenza o attestazione.</small></div>
           <div class="local-card"><span>Affitto turistico</span><b id="local-turismo">Da verificare</b><small>CIN e adempimenti non rendono automaticamente consentito l'uso locale.</small></div>
         </div>
+
+        <div class="section-label">Costi comuni e consumi</div>
+        <div class="cost-workbench">
+          <section class="cost-panel" aria-labelledby="common-costs-title">
+            <div class="cost-panel__head"><div><h3 id="common-costs-title">Una casa, un solo set di costi</h3><p>Inseriscili qui una volta. Il calcolo applica la quota corretta a ogni contratto.</p></div></div>
+            <div class="fields">
+              <div class="field"><label><span class="field-name">Condominio totale €/anno</span><input id="costi-condominio" type="number" value="1200" min="0" step="100" inputmode="decimal" /></label></div>
+              <div class="field"><label><span class="field-name">Quota proprietario nei lunghi <output id="o-quota-lungo"></output></span><input id="costi-quota-lungo" type="number" value="20" min="0" max="100" step="5" inputmode="decimal" /></label><small>Nel medio e turistico il modello usa il 100%.</small></div>
+              <div class="field"><label><span class="field-name">Manutenzione base €/anno</span><input id="costi-manutenzione" type="number" value="900" min="0" step="50" inputmode="decimal" /></label></div>
+              <div class="field"><label><span class="field-name">Extra usura turistico <output id="o-usura-breve"></output></span><input id="costi-usura-breve" type="number" value="50" min="0" max="100" step="5" inputmode="decimal" /></label><small>Solo sulla manutenzione, non sugli altri costi.</small></div>
+            </div>
+          </section>
+
+          <section class="cost-panel" aria-labelledby="consumption-title">
+            <div class="cost-panel__head"><div><h3 id="consumption-title">Calcolatore consumi</h3><p>Quantità × tariffa, più i costi fissi. Si applica al turistico e al transitorio solo se le utenze sono incluse.</p></div></div>
+            <div class="consumption-lines">
+              <div class="consumption-line">
+                <span>Elettricità</span>
+                <div class="field"><label><span class="field-name">kWh/anno</span><input id="cons-luce-kwh" type="number" value="1800" min="0" step="100" inputmode="decimal" /></label></div>
+                <span class="operator">×</span>
+                <div class="field"><label><span class="field-name">€/kWh</span><input id="cons-luce-tariffa" type="number" value="0.30" min="0" step="0.01" inputmode="decimal" /></label></div>
+                <output id="o-cons-luce">—</output>
+              </div>
+              <div class="consumption-line">
+                <span>Gas</span>
+                <div class="field"><label><span class="field-name">Smc/anno</span><input id="cons-gas-smc" type="number" value="500" min="0" step="50" inputmode="decimal" /></label></div>
+                <span class="operator">×</span>
+                <div class="field"><label><span class="field-name">€/Smc</span><input id="cons-gas-tariffa" type="number" value="1.10" min="0" step="0.05" inputmode="decimal" /></label></div>
+                <output id="o-cons-gas">—</output>
+              </div>
+            </div>
+            <div class="consumption-fixed">
+              <div class="field"><label><span class="field-name">Acqua €/anno</span><input id="cons-acqua" type="number" value="240" min="0" step="20" inputmode="decimal" /></label></div>
+              <div class="field"><label><span class="field-name">Internet €/mese</span><input id="cons-internet" type="number" value="30" min="0" step="5" inputmode="decimal" /></label></div>
+              <div class="field"><label><span class="field-name">Altri consumi €/anno</span><input id="cons-altro" type="number" value="0" min="0" step="50" inputmode="decimal" /></label></div>
+            </div>
+            <div class="consumption-total" aria-live="polite"><span>Totale consumi stimati</span><div><b id="o-cons-totale">—</b> <small id="o-cons-mese">—</small></div></div>
+          </section>
+        </div>
       </section>
 
       <section class="step step--scenarios" id="step-2" aria-labelledby="step-2-title">
         <div class="step__head">
-          <div><span class="eyebrow">Step 2 · confronto</span><h2 id="step-2-title">Gestisci le quattro opzioni in un'unica schermata</h2><p>Ogni canone, periodo di occupazione e costo e indipendente. Il confronto usa la cedolare sul lordo incassato e mostra il punto in cui ogni scenario supera gli altri.</p></div>
+          <div><span class="eyebrow">Step 2 · confronto</span><h2 id="step-2-title">Gestisci le quattro opzioni in un'unica schermata</h2><p>Qui restano solo le leve specifiche di ogni formula. Condominio, manutenzione e consumi arrivano dal set comune sopra; ogni box mette subito in evidenza netto e soglia di pareggio.</p></div>
         </div>
 
         <div class="verdict" id="verdict" aria-live="polite"></div>
@@ -268,44 +341,42 @@
         <div class="scenario-grid">
           <article class="scenario" data-k="lib44" id="card-lib44">
             <div class="scenario__head"><div><h3>4+4 libero</h3><p id="sub-lib44">cedolare 21% · IMU piena</p></div><span class="rank" id="rank-lib44">—</span></div>
+            <div class="scenario__result"><div class="net"><b id="net-lib44">—</b><span id="yield-lib44">—</span></div><div class="break" id="break-lib44"></div></div>
             <div class="scenario__inputs">
               <div class="field"><label><span class="field-name">Canone €/mese</span><input id="lib44-canone" type="number" value="525" min="0" step="25" /></label></div>
               <div class="field"><label><span class="field-name">Mesi incassati</span><input id="lib44-mesi" type="number" value="11.5" min="0" max="12" step="0.5" /></label></div>
-              <div class="field"><label><span class="field-name">Condominio proprietario €/a</span><input id="lib44-cond" type="number" value="240" min="0" step="50" /></label></div>
-              <div class="field"><label><span class="field-name">Manutenzione €/a</span><input id="lib44-manut" type="number" value="900" min="0" step="50" /></label></div>
             </div>
-            <div class="scenario__result"><div class="net"><b id="net-lib44">—</b><span id="yield-lib44">—</span></div><div class="break" id="break-lib44"></div><table class="details" id="detail-lib44"></table><p class="scenario-warning" id="warn-lib44"></p></div>
+            <details class="scenario__math"><summary>Dettaglio del calcolo</summary><table class="details" id="detail-lib44"></table></details><p class="scenario-warning" id="warn-lib44"></p>
           </article>
 
           <article class="scenario" data-k="conc" id="card-conc">
             <div class="scenario__head"><div><h3>3+2 concordato</h3><p id="sub-conc">accordo locale · benefici condizionati</p></div><span class="rank" id="rank-conc">—</span></div>
+            <div class="scenario__result"><div class="net"><b id="net-conc">—</b><span id="yield-conc">—</span></div><div class="break" id="break-conc"></div></div>
             <div class="scenario__inputs">
               <div class="field"><label><span class="field-name">Canone da accordo €/mese</span><input id="conc-canone" type="number" value="420" min="0" step="25" /></label><small>La stima iniziale usa −20% solo come segnaposto: sostituiscila con la fascia locale.</small></div>
               <div class="field"><label><span class="field-name">Mesi incassati</span><input id="conc-mesi" type="number" value="11.75" min="0" max="12" step="0.25" /></label></div>
-              <div class="field"><label><span class="field-name">Condominio proprietario €/a</span><input id="conc-cond" type="number" value="240" min="0" step="50" /></label></div>
-              <div class="field"><label><span class="field-name">Manutenzione €/a</span><input id="conc-manut" type="number" value="900" min="0" step="50" /></label></div>
               <label class="check"><input id="conc-attestato" type="checkbox" checked /><span>Contratto assistito o attestato conforme all'accordo territoriale</span></label>
             </div>
-            <div class="scenario__result"><div class="net"><b id="net-conc">—</b><span id="yield-conc">—</span></div><div class="break" id="break-conc"></div><table class="details" id="detail-conc"></table><p class="scenario-warning" id="warn-conc"></p></div>
+            <details class="scenario__math"><summary>Dettaglio del calcolo</summary><table class="details" id="detail-conc"></table></details><p class="scenario-warning" id="warn-conc"></p>
           </article>
 
           <article class="scenario" data-k="medio" id="card-medio">
             <div class="scenario__head"><div><h3>Transitorio / medio termine</h3><p id="sub-medio">1–18 mesi · esigenza temporanea reale</p></div><span class="rank" id="rank-medio">—</span></div>
+            <div class="scenario__result"><div class="net"><b id="net-medio">—</b><span id="yield-medio">—</span></div><div class="break" id="break-medio"></div></div>
             <div class="scenario__inputs">
               <div class="field"><label><span class="field-name">Canone €/mese</span><input id="medio-canone" type="number" value="605" min="0" step="25" /></label><small>La stima iniziale usa +15% come segnaposto per arredo e utenze.</small></div>
               <div class="field"><label><span class="field-name">Mesi incassati</span><input id="medio-mesi" type="number" value="11" min="0" max="12" step="0.5" /></label></div>
               <div class="field"><label><span class="field-name">Gestione % ricavi</span><input id="medio-gest" type="number" value="5" min="0" max="100" step="1" /></label></div>
-              <div class="field"><label><span class="field-name">Utenze €/a</span><input id="medio-utenze" type="number" value="1800" min="0" step="100" /></label></div>
-              <div class="field"><label><span class="field-name">Condominio €/a</span><input id="medio-cond" type="number" value="1200" min="0" step="100" /></label></div>
-              <div class="field"><label><span class="field-name">Manutenzione €/a</span><input id="medio-manut" type="number" value="900" min="0" step="50" /></label></div>
+              <label class="check"><input id="medio-utenze-incluse" type="checkbox" checked /><span>Utenze incluse: usa il totale del calcolatore consumi</span></label>
               <label class="check"><input id="medio-concordato" type="checkbox" /><span>Canone transitorio concordato, non libero</span></label>
               <label class="check"><input id="medio-attestato" type="checkbox" /><span>Contratto assistito o attestato conforme all'accordo</span></label>
             </div>
-            <div class="scenario__result"><div class="net"><b id="net-medio">—</b><span id="yield-medio">—</span></div><div class="break" id="break-medio"></div><table class="details" id="detail-medio"></table><p class="scenario-warning" id="warn-medio"></p></div>
+            <details class="scenario__math"><summary>Dettaglio del calcolo</summary><table class="details" id="detail-medio"></table></details><p class="scenario-warning" id="warn-medio"></p>
           </article>
 
           <article class="scenario" data-k="breve" id="card-breve">
             <div class="scenario__head"><div><h3>Affitto turistico</h3><p id="sub-breve">notti vendute · costi per soggiorno</p></div><span class="rank" id="rank-breve">—</span></div>
+            <div class="scenario__result"><div class="net"><b id="net-breve">—</b><span id="yield-breve">—</span></div><div class="break" id="break-breve"></div></div>
             <div class="scenario__inputs">
               <div class="field"><label><span class="field-name">Prezzo medio €/notte</span><input id="breve-adr" type="number" value="120" min="0" step="5" /></label></div>
               <div class="field"><label><span class="field-name">Occupazione %</span><input id="breve-occ" type="number" value="49" min="0" max="100" step="1" /></label></div>
@@ -314,12 +385,9 @@
               <div class="field"><label><span class="field-name">Costo pulizia €/stay</span><input id="breve-pulizia-costo" type="number" value="45" min="0" step="5" /></label></div>
               <div class="field"><label><span class="field-name">Piattaforme % ricavi</span><input id="breve-ota" type="number" value="16" min="0" max="100" step="0.5" /></label></div>
               <div class="field"><label><span class="field-name">Gestione % ricavi</span><input id="breve-gest" type="number" value="10" min="0" max="100" step="1" /></label></div>
-              <div class="field"><label><span class="field-name">Utenze €/a</span><input id="breve-utenze" type="number" value="1800" min="0" step="100" /></label></div>
-              <div class="field"><label><span class="field-name">Condominio €/a</span><input id="breve-cond" type="number" value="1200" min="0" step="100" /></label></div>
-              <div class="field"><label><span class="field-name">Manutenzione €/a</span><input id="breve-manut" type="number" value="1350" min="0" step="50" /></label></div>
               <div class="field"><label><span class="field-name">Regime su questo immobile</span><select id="breve-regime"><option value="21" selected>21% · immobile prescelto</option><option value="26">26% · secondo immobile</option><option value="impresa">Dal terzo · impresa</option></select></label></div>
             </div>
-            <div class="scenario__result"><div class="net"><b id="net-breve">—</b><span id="yield-breve">—</span></div><div class="break" id="break-breve"></div><table class="details" id="detail-breve"></table><p class="scenario-warning" id="warn-breve"></p></div>
+            <details class="scenario__math"><summary>Dettaglio del calcolo</summary><table class="details" id="detail-breve"></table></details><p class="scenario-warning" id="warn-breve"></p>
           </article>
         </div>
 
@@ -331,10 +399,12 @@
           <summary><h3>Matematica e correzioni applicate</h3><span>apri +</span></summary>
           <div>
             <h4>Una formula diversa per ogni scenario</h4>
-            <span class="formula">4+4 / 3+2: canone × mesi incassati − costi proprietario − cedolare sul lordo − IMU</span>
-            <span class="formula">Transitorio: canone × mesi − gestione % − utenze − condominio − manutenzione − cedolare sul lordo − IMU</span>
-            <span class="formula">Turistico: (ADR × notti + pulizie addebitate) − piattaforme % − gestione % − costo pulizie − costi annui − cedolare sul lordo − IMU</span>
+            <span class="formula">4+4 / 3+2: canone × mesi incassati − quota condominio proprietario − manutenzione base − cedolare sul lordo − IMU</span>
+            <span class="formula">Transitorio: canone × mesi − gestione % − condominio − manutenzione − consumi se inclusi − cedolare sul lordo − IMU</span>
+            <span class="formula">Turistico: (ADR × notti + pulizie addebitate) − piattaforme % − gestione % − costo pulizie − condominio − manutenzione con extra usura − consumi − cedolare sul lordo − IMU</span>
             <ul>
+              <li><b>I costi dell'immobile sono unici.</b> Condominio, manutenzione e consumi si inseriscono una volta; cambia solo la quota applicata in base a chi li sostiene.</li>
+              <li><b>I consumi sono calcolati.</b> Elettricita e gas derivano da quantita × tariffa; acqua, internet e altre voci restano esplicite.</li>
               <li><b>Il 3+2 non e uno sconto medio.</b> Il canone va inserito dall'accordo territoriale, che usa zona e caratteristiche oggettive dell'alloggio.</li>
               <li><b>Il transitorio non prende automaticamente il 10%.</b> Serve che sia a canone concordato, conforme e in un Comune agevolato; altrimenti il modello usa il 21%.</li>
               <li><b>Riduzione IMU concordato.</b> Se il contratto concordato e conforme, il modello applica il 75% dell'IMU anche al transitorio concordato.</li>
@@ -417,10 +487,21 @@
         valoreImmobile: num('valore'), renditaCatastale: num('rendcat'), aliquotaImu: num('aliq'),
         imuDovuta: $('imu-dovuta').value === 'si', altaTensione: $('alta').value,
         accordoTerritoriale: $('accordo').value, regoleTuristiche: $('regole').value,
-        lib44: { canone: num('lib44-canone'), mesi: num('lib44-mesi'), condominio: num('lib44-cond'), manutenzione: num('lib44-manut') },
-        conc: { canone: num('conc-canone'), mesi: num('conc-mesi'), condominio: num('conc-cond'), manutenzione: num('conc-manut'), attestato: $('conc-attestato').checked },
-        medio: { canone: num('medio-canone'), mesi: num('medio-mesi'), gestione: num('medio-gest') / 100, utenze: num('medio-utenze'), condominio: num('medio-cond'), manutenzione: num('medio-manut'), concordato: $('medio-concordato').checked, attestato: $('medio-attestato').checked },
-        breve: { adr: num('breve-adr'), occupazione: num('breve-occ') / 100, soggiornoMedio: num('breve-stay'), puliziaAddebitata: num('breve-pulizia-addebito'), puliziaCosto: num('breve-pulizia-costo'), ota: num('breve-ota') / 100, gestione: num('breve-gest') / 100, utenze: num('breve-utenze'), condominio: num('breve-cond'), manutenzione: num('breve-manut'), regime: $('breve-regime').value }
+        costi: {
+          condominioAnnuo: num('costi-condominio'),
+          quotaCondominioLungo: num('costi-quota-lungo') / 100,
+          manutenzioneAnnua: num('costi-manutenzione'),
+          maggiorazioneUsuraBreve: num('costi-usura-breve') / 100,
+          consumi: {
+            elettricitaKwh: num('cons-luce-kwh'), elettricitaTariffa: num('cons-luce-tariffa'),
+            gasSmc: num('cons-gas-smc'), gasTariffa: num('cons-gas-tariffa'),
+            acquaAnnua: num('cons-acqua'), internetMensile: num('cons-internet'), altroAnnuo: num('cons-altro')
+          }
+        },
+        lib44: { canone: num('lib44-canone'), mesi: num('lib44-mesi') },
+        conc: { canone: num('conc-canone'), mesi: num('conc-mesi'), attestato: $('conc-attestato').checked },
+        medio: { canone: num('medio-canone'), mesi: num('medio-mesi'), gestione: num('medio-gest') / 100, utenzeIncluse: $('medio-utenze-incluse').checked, concordato: $('medio-concordato').checked, attestato: $('medio-attestato').checked },
+        breve: { adr: num('breve-adr'), occupazione: num('breve-occ') / 100, soggiornoMedio: num('breve-stay'), puliziaAddebitata: num('breve-pulizia-addebito'), puliziaCosto: num('breve-pulizia-costo'), ota: num('breve-ota') / 100, gestione: num('breve-gest') / 100, regime: $('breve-regime').value }
       };
     }
 
@@ -429,7 +510,12 @@
       const specifiche = s.k === 'breve'
         ? `<tr><td>Notti · soggiorni</td><td>${fmt(d.notti)} · ${fmt(d.soggiorni)}</td></tr><tr><td>Pernotti · pulizie addebitate</td><td>${eur(d.ricaviPernottamenti)} · ${eur(d.ricaviPulizie)}</td></tr><tr><td>Piattaforme + gestione</td><td>−${eur(d.costiPercentuali)}</td></tr><tr><td>Costo pulizie</td><td>−${eur(d.pulizie)}</td></tr>`
         : `<tr><td>Canone · mesi</td><td>${eur(d.canone)} · ${d.mesi}</td></tr>${d.costiPercentuali ? `<tr><td>Gestione</td><td>−${eur(d.costiPercentuali)}</td></tr>` : ''}`;
-      return `<tr><td>Ricavi lordi</td><td>${eur(s.ricavi)}</td></tr>${specifiche}<tr><td>Costi fissi dichiarati</td><td>−${eur(d.costiFissi)}</td></tr><tr><td>Cedolare sul lordo</td><td>−${eur(s.cedolare)}</td></tr><tr><td>IMU</td><td>−${eur(s.imu)}</td></tr>`;
+      const vociComuni = [
+        ['Condominio applicato', d.condominio],
+        ['Manutenzione applicata', d.manutenzione],
+        ['Consumi inclusi', d.utenze]
+      ].filter(([, valore]) => valore > 0).map(([nome, valore]) => `<tr><td>${nome}</td><td>−${eur(valore)}</td></tr>`).join('');
+      return `<tr><td>Ricavi lordi</td><td>${eur(s.ricavi)}</td></tr>${specifiche}${vociComuni || '<tr><td>Costi comuni applicati</td><td>0 €</td></tr>'}<tr><td>Cedolare sul lordo</td><td>−${eur(s.cedolare)}</td></tr><tr><td>IMU</td><td>−${eur(s.imu)}</td></tr>`;
     }
 
     function testoSoglia(parametri, scenari, s) {
@@ -458,6 +544,12 @@
       const second = ranking[1];
       $('o-valore').value = eur(p.valoreImmobile);
       $('o-imu').value = eur(S.imuPiena) + '/anno';
+      $('o-quota-lungo').value = eur(p.costi.condominioAnnuo * p.costi.quotaCondominioLungo);
+      $('o-usura-breve').value = eur(p.costi.manutenzioneAnnua * (1 + p.costi.maggiorazioneUsuraBreve));
+      $('o-cons-luce').value = eur(S.consumi.elettricita);
+      $('o-cons-gas').value = eur(S.consumi.gas);
+      $('o-cons-totale').textContent = eur(S.consumi.totale) + '/anno';
+      $('o-cons-mese').textContent = `· ${eur(S.consumi.totale / 12)}/mese`;
       aggiornaContesto();
 
       if (!best) {

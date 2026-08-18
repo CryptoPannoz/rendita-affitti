@@ -16,15 +16,17 @@ Nessuna registrazione, nessun dato raccolto: i conti girano tutti nel browser.
 
 ## Cosa fa
 
-- Scegli una città e la metratura: valore, canone di mercato e rendita catastale
-  si precompilano dai **dati OMI dell'Agenzia delle Entrate** (110 capoluoghi);
+- Scegli una città e la metratura: valore e canone di mercato si precompilano
+  dai **dati OMI dell'Agenzia delle Entrate** (110 capoluoghi); la rendita
+  catastale va invece copiata dalla visura;
   prezzo a notte e occupazione dell'affitto breve dalle medie di mercato
   pubbliche (dati Airbnb / AirROI 2025-26) per 14 città turistiche.
-- Lo **step 1** separa immobile e regole locali: struttura, dati OMI, rendita
-  catastale, IMU, comune ad alta tensione, accordo territoriale e vincoli
-  turistici.
-- Lo **step 2** raccoglie le quattro opzioni in box indipendenti. Canoni, mesi,
-  costi e trattamento fiscale non si trascinano più da uno scenario all'altro.
+- Lo **step 1** separa immobile e regole locali e raccoglie una volta sola i
+  costi comuni: condominio, manutenzione e consumi. Elettricità e gas sono
+  calcolati come quantità annua × tariffa, insieme ad acqua e internet.
+- Lo **step 2** raccoglie le quattro opzioni in box compatti. Canoni, mesi e
+  trattamento fiscale restano indipendenti; i costi comuni sono applicati con
+  la quota coerente per ogni scenario.
 - Ogni box mostra netto annuo e mensile, rendimento e la propria **soglia di
   pareggio**: canone per 4+4 e 3+2, mesi per il transitorio, occupazione per il
   turistico.

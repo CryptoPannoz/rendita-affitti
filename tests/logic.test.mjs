@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calcolaImu, calcolaScenari, classificaScenari, trovaSoglia } from '../logic.mjs';
+import { calcolaConsumi, calcolaImu, calcolaScenari, classificaScenari, trovaSoglia } from '../logic.mjs';
 
 const base = {
   valoreImmobile: 200000,
@@ -10,11 +10,67 @@ const base = {
   altaTensione: 'si',
   accordoTerritoriale: 'verificato',
   regoleTuristiche: 'verificato',
-  lib44: { canone: 1000, mesi: 12, condominio: 0, manutenzione: 0 },
-  conc: { canone: 800, mesi: 12, condominio: 0, manutenzione: 0, attestato: true },
-  medio: { canone: 1100, mesi: 11, gestione: 0.05, utenze: 0, condominio: 0, manutenzione: 0, concordato: false, attestato: false },
-  breve: { adr: 100, occupazione: 0.5, soggiornoMedio: 5, puliziaAddebitata: 0, puliziaCosto: 0, ota: 0.15, gestione: 0, utenze: 0, condominio: 0, manutenzione: 0, regime: '21' }
+  costi: {
+    condominioAnnuo: 0,
+    quotaCondominioLungo: 0,
+    manutenzioneAnnua: 0,
+    maggiorazioneUsuraBreve: 0,
+    consumi: {}
+  },
+  lib44: { canone: 1000, mesi: 12 },
+  conc: { canone: 800, mesi: 12, attestato: true },
+  medio: { canone: 1100, mesi: 11, gestione: 0.05, utenzeIncluse: false, concordato: false, attestato: false },
+  breve: { adr: 100, occupazione: 0.5, soggiornoMedio: 5, puliziaAddebitata: 0, puliziaCosto: 0, ota: 0.15, gestione: 0, regime: '21' }
 };
+
+test('calcola i consumi annuali da quantita e tariffe, senza importi nascosti', () => {
+  const consumi = calcolaConsumi({
+    consumi: {
+      elettricitaKwh: 1800,
+      elettricitaTariffa: 0.3,
+      gasSmc: 500,
+      gasTariffa: 1.1,
+      acquaAnnua: 240,
+      internetMensile: 30,
+      altroAnnuo: 40
+    }
+  });
+  assert.deepEqual(consumi, {
+    elettricita: 540,
+    gas: 550,
+    acqua: 240,
+    internet: 360,
+    altro: 40,
+    totale: 1730
+  });
+});
+
+test('riusa condominio e manutenzione, cambiando solo la quota coerente con lo scenario', () => {
+  const condivisi = structuredClone(base);
+  condivisi.costi = {
+    condominioAnnuo: 1200,
+    quotaCondominioLungo: 0.2,
+    manutenzioneAnnua: 900,
+    maggiorazioneUsuraBreve: 0.5,
+    consumi: {
+      elettricitaKwh: 1800,
+      elettricitaTariffa: 0.3,
+      gasSmc: 500,
+      gasTariffa: 1.1,
+      acquaAnnua: 240,
+      internetMensile: 30
+    }
+  };
+  condivisi.medio.utenzeIncluse = true;
+  const s = calcolaScenari(condivisi);
+  assert.equal(s.lib44.dettagli.costiFissi, 1140);
+  assert.equal(s.conc.dettagli.costiFissi, 1140);
+  assert.equal(s.medio.dettagli.costiFissi, 3790);
+  assert.equal(s.breve.dettagli.costiFissi, 4240);
+
+  condivisi.medio.utenzeIncluse = false;
+  assert.equal(calcolaScenari(condivisi).medio.dettagli.costiFissi, 2100);
+});
 
 test('calcola la base IMU da rendita rivalutata, moltiplicatore e aliquota per mille', () => {
   assert.equal(calcolaImu(base), 890.4);
