@@ -1,16 +1,20 @@
-# Rendita immobiliare affitti 🏠
+# Rendita immobiliare affitti 🏠 · Italian rental yield calculator
 
-**Quanto rende davvero il tuo immobile?** Calcolatore gratuito e open source che
-confronta, sul **netto annuo**, i quattro modi di mettere a reddito una casa in Italia:
+**Quanto rende davvero il tuo immobile?** Calcolatore gratuito e open source
+(italiano + English) che confronta, sul **netto annuo**, i quattro modi di
+mettere a reddito una casa in Italia:
 
-| Regime | Cedolare secca | IMU | Occupazione |
-|---|---|---|---|
-| **Affitto breve turistico** | 26% (21% per un solo immobile) | piena | prezzo a notte × notti vendute |
-| **Medio termine / transitorio** (1–18 mesi) | 21%, o 10% se concordato in comune ATA | piena | mesi affittati l'anno |
-| **4+4 canone libero** | 21% | piena | 12 mesi − sfitto |
-| **3+2 canone concordato** | 10% nei comuni ATA (21% altrove) | **75%** | 12 mesi − sfitto/2 |
+| Regime | Cedolare secca | IMU | Consumi | Occupazione |
+|---|---|---|---|---|
+| **Affitto breve turistico** | 26% (21% per un solo immobile) | piena | **inclusi** (a carico host) | prezzo a notte × notti vendute |
+| **Medio termine / transitorio** (1–18 mesi) | 21% | piena | **inclusi** | mesi affittati l'anno, canone ≈ 4+4 |
+| **4+4 canone libero** | 21% | piena | all'inquilino | 12 mesi − sfitto |
+| **3+2 canone concordato** | 10% nei comuni ATA (21% altrove) | **75%** | all'inquilino | 12 mesi − sfitto/2 |
 
-👉 **Prova subito: [bebroggi.it/tools/rendita-affitti](https://bebroggi.it/tools/rendita-affitti/)**
+Il transitorio a canone concordato (canone da tabelle, cedolare 10% nei comuni
+ad alta tensione abitativa) esiste ma non è modellato: è spiegato nel metodo.
+
+👉 **Prova subito: [bebroggi.it/tools/rendita-affitti](https://bebroggi.it/tools/rendita-affitti/)** (IT/EN)
 
 Nessuna registrazione, nessun dato raccolto: i conti girano tutti nel browser.
 

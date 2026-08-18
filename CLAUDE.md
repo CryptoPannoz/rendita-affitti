@@ -13,8 +13,25 @@ IMU, cedolare secca, tassi di occupazione e costi di gestione.
 - **Stack**: un solo `index.html` con CSS e JS inline (stesso pattern di
   `tools/affitto-vs-acquisto.html` del sito), più i dati in `data/`. Nessun
   framework, nessun build step, nessun login, nessuna raccolta dati.
-- **Lingua**: italiano. Stesso design system del sito (Instrument Sans/Serif,
-  IBM Plex Mono, palette paper/ink/blue/orange).
+- **Lingue**: italiano (sorgente, nell'HTML) e inglese, con interruttore in alto.
+  L'EN sta nel dizionario `EN` (nodi statici, via `data-i18n`/`data-i18n-html`)
+  e in `DYN.en` (stringhe generate dal motore). Cambiare lingua **non deve mai
+  resettare i valori inseriti**: ritraduce e basta (`setStatic` + `notes` +
+  `render`, mai `prefill`). Stesso design system del sito.
+
+## Il modello economico (regole decise da Alberto, non toccarle senza chiedere)
+
+- **Medio termine (transitorio)**: di norma canone = canone 4+4 (slider parte da 0),
+  con **consumi inclusi** a carico del proprietario. Cedolare **21%**: il 10%
+  esiste solo per il transitorio a canone concordato (canone da tabelle) in
+  comune ATA, e non è modellato — è spiegato nel metodo.
+- **Affitto breve**: **consumi inclusi** (utenze a carico host), condominio pieno,
+  manutenzione +50%.
+- **4+4 e 3+2**: utenze intestate all'inquilino, condominio al 20% (straordinaria).
+- **3+2 concordato**: cedolare 10% **solo** nei comuni ad alta tensione abitativa
+  (toggle), IMU al 75% ovunque.
+- Il **netto** è il protagonista: nelle card sta nel blocco `.hero`, grande,
+  prima del dettaglio.
 
 ## Regole del progetto
 
