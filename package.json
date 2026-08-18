@@ -1,0 +1,13 @@
+{
+  "name": "rendita-affitti",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Quanto rende il tuo immobile? Affitto breve, medio termine, 4+4 o 3+2 concordato a confronto, con IMU e cedolare secca.",
+  "license": "MIT",
+  "scripts": {
+    "build:omi": "node data/build-omi-capoluoghi.mjs",
+    "dev": "python3 -m http.server 8080",
+    "deploy:site": "node scripts/deploy-site.mjs"
+  }
+}

@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quanto rende il tuo immobile? Affitto breve, transitorio, 4+4 o concordato</title>
+  <meta name="description" content="Calcolatore gratuito e open source: confronta la rendita netta del tuo immobile tra affitto breve turistico, medio termine, 4+4 e 3+2 concordato — con IMU, cedolare secca, occupazione e costi di gestione." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="author" content="Alberto Broggi" />
+  <link rel="canonical" href="https://bebroggi.it/tools/rendita-affitti/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="it_IT" />
+  <meta property="og:site_name" content="Alberto Broggi" />
+  <meta property="og:title" content="Quanto rende il tuo immobile? I 4 affitti a confronto" />
+  <meta property="og:description" content="Breve turistico, medio termine, 4+4 o 3+2 concordato: il confronto giusto è sul netto che ti resta dopo costi, cedolare e IMU. Calcolalo con i tuoi numeri." />
+  <meta property="og:url" content="https://bebroggi.it/tools/rendita-affitti/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Quanto rende il tuo immobile? I 4 affitti a confronto" />
+  <meta name="twitter:description" content="Rendita netta a confronto: affitto breve, medio termine, 4+4 e 3+2 concordato, con IMU e cedolare secca." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://bebroggi.it/tools/rendita-affitti/#app",
+        "name": "Calcolatore rendita immobiliare da affitto",
+        "url": "https://bebroggi.it/tools/rendita-affitti/",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Qualsiasi browser",
+        "inLanguage": "it-IT",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+        "description": "Confronta la rendita netta di un immobile tra affitto breve turistico, medio termine, 4+4 canone libero e 3+2 canone concordato: occupazione, prezzo a notte, costi di gestione, cedolare secca e IMU.",
+        "author": { "@type": "Person", "name": "Alberto Broggi", "url": "https://bebroggi.it/" },
+        "featureList": [
+          "Quattro regimi d'affitto a confronto sul netto annuo",
+          "Dati OMI per 110 capoluoghi: valori e canoni precompilati",
+          "Cedolare secca 21%, 26% e 10% e IMU con riduzione concordato",
+          "Punto di pareggio dell'occupazione per l'affitto breve",
+          "Rendita netta in % del valore dell'immobile"
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Alberto Broggi", "item": "https://bebroggi.it/it/" },
+          { "@type": "ListItem", "position": 2, "name": "Quanto rende il tuo immobile?", "item": "https://bebroggi.it/tools/rendita-affitti/" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Conviene più l'affitto breve o il contratto 4+4?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Dipende quasi tutto dal tasso di occupazione e dai costi di gestione. L'affitto breve incassa di più a parità di notti, ma paga commissioni alle piattaforme, pulizie, utenze e una cedolare che dal secondo immobile sale al 26%. Sotto una certa occupazione — spesso tra il 40% e il 55% — il 4+4 o il concordato rendono di più, con molto meno lavoro. Il confronto va fatto sul netto annuo dopo costi e imposte, ed è quello che fa questo calcolatore." }
+          },
+          {
+            "@type": "Question",
+            "name": "Perché il 3+2 a canone concordato può battere il 4+4?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Perché lo sconto sul canone è spesso più che compensato dal fisco: nei comuni ad alta tensione abitativa la cedolare secca scende dal 21% al 10%, e l'IMU si paga ovunque solo al 75%. Con uno sconto sul canone del 15-25% il netto dei due contratti si equivale in molte città, e dove l'aliquota IMU è alta il concordato vince." }
+          },
+          {
+            "@type": "Question",
+            "name": "Che tasse si pagano sull'affitto breve?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Con la cedolare secca: 26% sui corrispettivi lordi, ridotta al 21% per un solo immobile a tua scelta. Dal 2026 puoi destinare agli affitti brevi al massimo due appartamenti: dal terzo l'attività si presume d'impresa e serve la partita IVA (Legge di Bilancio 2026). Le piattaforme applicano una ritenuta del 21% come acconto. Con la cedolare non si deduce alcun costo: commissioni, pulizie e utenze restano interamente a tuo carico. Si paga inoltre l'IMU come seconda casa, e serve il CIN (Codice Identificativo Nazionale)." }
+          },
+          {
+            "@type": "Question",
+            "name": "Cos'è l'affitto a medio termine o transitorio?",
+            "acceptedAnswer": { "@type": "Answer", "text": "È il contratto da 1 a 18 mesi per esigenze temporanee (lavoro, studio, cure): studenti fuori sede, trasfertisti, nomadi digitali. Spunta canoni sopra il mercato del lungo periodo perché l'immobile è arredato e le utenze sono spesso incluse, con un'occupazione più stabile dell'affitto turistico. La cedolare è al 21%, oppure al 10% se il contratto è transitorio a canone concordato in un comune ad alta tensione abitativa." }
+          },
+          {
+            "@type": "Question",
+            "name": "Il tasso di occupazione che il calcolatore precompila è una previsione?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No: è una media cittadina ricavata da fonti pubbliche di mercato, indicata come punto di partenza. L'occupazione del singolo immobile dipende da posizione, qualità, prezzo, recensioni e stagionalità: può stare molto sopra o molto sotto la media della sua città. Il valore è modificabile ed è la prima cosa da mettere alla prova." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Instrument+Sans:wdth,wght@75..100,400..700&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet" />
+  <script src="data/omi-capoluoghi.js"></script>
+  <script src="data/mercato-breve.js"></script>
+  <style>
+    :root {
+      --paper: #f3f1ea; --paper-2: #e8e6dd; --white: #fffefa; --ink: #111615;
+      --muted: #686d68; --line: rgba(17,22,21,.15); --blue: #165dff; --orange: #ff5b35;
+      --lime: #c7ff39; --radius: 18px; --radius-lg: 28px; --maxw: 1180px;
+      --sans: "Instrument Sans", Arial, sans-serif;
+      --serif: "Instrument Serif", Georgia, serif;
+      --mono: "IBM Plex Mono", monospace;
+      --breve: #7a3ff2; --medio: #0d9488; --lib44: #165dff; --conc: #b8860b;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 12px; }
+    html, body { margin: 0; padding: 0; }
+    body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    ::selection { background: var(--blue); color: white; }
+    .container { width: min(100% - 40px, var(--maxw)); margin-inline: auto; }
+    a { color: inherit; text-decoration: none; }
+    button, input, select, summary { font: inherit; }
+    button { color: inherit; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { line-height: .98; letter-spacing: -.045em; }
+    h1 em { color: var(--blue); font-family: var(--serif); font-weight: 400; font-style: normal; }
+
+    /* Testata */
+    .tool-top { border-bottom: 1px solid var(--line); }
+    .tool-top__inner { min-height: 64px; display: flex; align-items: center; gap: 18px; }
+    .tool-top a { font-size: .78rem; font-weight: 650; }
+    .tool-top .gh { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; }
+    .tool-top .gh:hover { background: var(--ink); color: white; border-color: var(--ink); }
+    .tool-hero { padding: 44px 0 30px; }
+    .tool-hero h1 { margin: 0; max-width: 17ch; font-size: clamp(2.3rem, 5.6vw, 4.2rem); font-weight: 630; letter-spacing: -.06em; }
+    .tool-hero p.lead { max-width: 64ch; margin: 20px 0 0; color: #4d524e; font-size: clamp(1rem, 1.5vw, 1.18rem); line-height: 1.45; }
+    .hero-promise { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .hero-promise span { padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--white); color: #4d524e; font-family: var(--mono); font-size: .62rem; }
+
+    /* Pannello parametri */
+    .calc { padding-bottom: 90px; }
+    .panel { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 28px 26px 24px; max-width: 820px; margin: 0 auto; }
+    .panel h2 { margin: 0 0 4px; font-size: 1.15rem; font-weight: 650; letter-spacing: -.03em; }
+    .panel__hint { margin: 0 0 20px; color: var(--muted); font-size: .74rem; }
+    .sub-step { display: flex; align-items: center; gap: 10px; margin: 28px 0 14px; color: var(--ink); font-family: var(--mono); font-size: .64rem; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; }
+    .sub-step::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    .sub-step i { flex: none; display: grid; place-items: center; min-width: 30px; height: 21px; padding: 0 6px; border-radius: 999px; background: var(--ink); color: white; font-style: normal; font-size: .58rem; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+    @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+    .field { min-width: 0; }
+    .field > label { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 7px; font-size: .74rem; font-weight: 650; letter-spacing: -.01em; }
+    .field > label output { color: var(--blue); font-family: var(--mono); font-size: .8rem; font-weight: 500; white-space: nowrap; }
+    .field input[type="number"], .field select {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px;
+      background: var(--paper); color: var(--ink); font-family: var(--mono); font-size: .92rem; -moz-appearance: textfield;
+    }
+    .field select { font-family: var(--sans); font-size: .88rem; min-height: 44px; }
+    .field input:focus, .field select:focus { outline: 2px solid var(--blue); outline-offset: 1px; background: var(--white); }
+    .field input[type="range"] { width: 100%; margin: 9px 0 0; accent-color: var(--blue); }
+    .field small { display: block; margin-top: 5px; color: var(--muted); font-size: .66rem; line-height: 1.45; }
+    .field small b { color: var(--ink); }
+    .yn { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .yn button { min-height: 42px; padding: 0 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); cursor: pointer; font-size: .76rem; font-weight: 650; letter-spacing: -.01em; transition: background .16s ease, color .16s ease, border-color .16s ease; }
+    .yn button:hover { border-color: var(--ink); }
+    .yn button.on { background: var(--blue); border-color: var(--blue); color: white; }
+    .fonte-line { margin: 8px 0 0; color: var(--muted); font-family: var(--mono); font-size: .6rem; line-height: 1.5; }
+
+    /* Riquadro città */
+    .omi { margin: 0 0 6px; padding: 15px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); }
+    .omi__row { display: grid; grid-template-columns: 1fr 96px; gap: 8px; }
+    .omi__f { display: flex; flex-direction: column; gap: 5px; }
+    .omi__f > span { color: var(--muted); font-family: var(--mono); font-size: .58rem; text-transform: uppercase; letter-spacing: .06em; }
+    .omi select, .omi input { width: 100%; min-height: 42px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 11px; background: var(--white); font-size: .84rem; }
+    .omi select:focus, .omi input:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+    .omi__out { margin: 10px 0 0; color: var(--muted); font-family: var(--mono); font-size: .64rem; line-height: 1.6; }
+    .omi__out b { color: var(--ink); font-weight: 500; }
+
+    /* Risultati */
+    .results { display: flex; flex-direction: column; gap: 14px; max-width: 980px; margin: 18px auto 0; }
+    .card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 26px; }
+    .card > h3 { margin: 0 0 4px; font-size: 1.05rem; font-weight: 650; letter-spacing: -.03em; }
+    .card > p.note { margin: 0 0 18px; color: var(--muted); font-size: .74rem; }
+
+    .verdict { background: var(--ink); color: white; border-color: var(--ink); padding: 32px 30px; }
+    .verdict small { display: block; color: rgba(255,255,255,.72); font-family: var(--mono); font-size: .64rem; text-transform: uppercase; letter-spacing: .09em; }
+    .verdict strong { display: block; margin: 12px 0 0; font-size: clamp(1.9rem, 4.2vw, 3.1rem); font-weight: 630; line-height: 1; letter-spacing: -.05em; }
+    .verdict strong em { font-family: var(--serif); font-style: normal; font-weight: 400; color: var(--lime); }
+    .verdict p { margin: 16px 0 0; max-width: 62ch; color: rgba(255,255,255,.82); font-size: .9rem; line-height: 1.55; }
+    .verdict p b { color: white; }
+
+    .scen-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    @media (max-width: 900px) { .scen-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 520px) { .scen-grid { grid-template-columns: 1fr; } }
+    .scen { position: relative; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 16px 14px; border-top: 4px solid var(--muted); }
+    .scen[data-k="breve"] { border-top-color: var(--breve); }
+    .scen[data-k="medio"] { border-top-color: var(--medio); }
+    .scen[data-k="lib44"] { border-top-color: var(--lib44); }
+    .scen[data-k="conc"]  { border-top-color: var(--conc); }
+    .scen.win { box-shadow: 0 10px 32px rgba(17,22,21,.12); }
+    .scen .best { position: absolute; top: -13px; right: 10px; padding: 3px 10px; border-radius: 999px; background: var(--lime); color: var(--ink); font-family: var(--mono); font-size: .56rem; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+    .scen h4 { margin: 0; font-size: .9rem; font-weight: 650; letter-spacing: -.02em; }
+    .scen .sub { display: block; margin-top: 2px; color: var(--muted); font-family: var(--mono); font-size: .6rem; }
+    .scen .netto { display: block; margin: 12px 0 0; font-size: 1.55rem; font-weight: 630; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    .scen .netto.neg { color: var(--orange); }
+    .scen .permese { display: block; color: var(--muted); font-family: var(--mono); font-size: .64rem; margin-top: 2px; }
+    .scen .yield { display: inline-block; margin-top: 8px; padding: 3px 9px; border-radius: 999px; background: var(--paper); font-family: var(--mono); font-size: .62rem; }
+    .scen table { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: .7rem; }
+    .scen td { padding: 5px 0; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    .scen td:last-child { text-align: right; font-family: var(--mono); white-space: nowrap; }
+    .scen tr.tot td { font-weight: 700; }
+    .scen td small { display: block; color: var(--muted); font-size: .62rem; }
+
+    .chart-wrap { width: 100%; overflow-x: auto; }
+    .chart-wrap svg { display: block; width: 100%; min-width: 420px; height: auto; }
+
+    .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    @media (max-width: 640px) { .kpis { grid-template-columns: 1fr; } }
+    .kpi { background: var(--white); padding: 18px 16px; }
+    .kpi span { display: block; color: var(--muted); font-family: var(--mono); font-size: .58rem; text-transform: uppercase; letter-spacing: .07em; line-height: 1.4; }
+    .kpi b { display: block; margin-top: 10px; font-size: 1.3rem; font-weight: 620; letter-spacing: -.03em; }
+    .kpi i { display: block; margin-top: 4px; color: var(--muted); font-size: .66rem; font-style: normal; line-height: 1.45; }
+
+    table.t { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    table.t th, table.t td { padding: 10px 8px; text-align: right; border-bottom: 1px solid var(--line); }
+    table.t th:first-child, table.t td:first-child { text-align: left; }
+    table.t thead th { color: var(--muted); font-family: var(--mono); font-size: .6rem; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; }
+    table.t td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+    table.t tr.hit td { background: rgba(199,255,57,.25); }
+    .tscroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+
+    .warnbox { display: flex; gap: 10px; padding: 13px 16px; border-radius: 14px; background: #fff1ec; border: 1px solid rgba(255,91,53,.35); color: #8c3418; font-size: .76rem; line-height: 1.5; }
+    .warnbox b { color: #6f2a12; }
+
+    details.deep { padding: 0; }
+    details.deep > summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 24px; cursor: pointer; list-style: none; }
+    details.deep > summary::-webkit-details-marker { display: none; }
+    details.deep > summary h3 { margin: 0; font-size: 1.05rem; font-weight: 650; letter-spacing: -.03em; }
+    details.deep > summary span { display: flex; align-items: center; gap: 10px; color: var(--muted); font-family: var(--mono); font-size: .62rem; text-transform: uppercase; letter-spacing: .07em; white-space: nowrap; }
+    details.deep > summary span b { display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--line); border-radius: 50%; font-weight: 400; }
+    details.deep[open] > summary span b { transform: rotate(45deg); }
+    details.deep > summary:hover span b { background: var(--ink); color: white; border-color: var(--ink); }
+    details.deep > div { padding: 0 24px 24px; }
+    .faq h4 { margin: 26px 0 6px; font-size: .95rem; font-weight: 650; letter-spacing: -.03em; }
+    .faq h4:first-of-type { margin-top: 4px; }
+    .faq p { margin: 0; color: #424743; font-size: .86rem; line-height: 1.6; max-width: 76ch; }
+    .metodo ul { margin: 0; padding-left: 18px; color: #4a4f4a; font-size: .8rem; line-height: 1.6; }
+    .metodo li { margin-bottom: 8px; }
+    .metodo li b { font-weight: 650; }
+
+    footer { border-top: 1px solid var(--line); padding: 30px 0 40px; }
+    footer .container { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; color: var(--muted); font-size: .72rem; }
+    footer a { text-decoration: underline; text-underline-offset: 2px; }
+    footer a:hover { color: var(--ink); }
+
+    @media (pointer: coarse) {
+      .field input[type="range"] { height: 44px; background: transparent; }
+      .yn button { min-height: 44px; }
+    }
+    @media (max-width: 520px) { .card { padding: 20px 18px; } .verdict { padding: 24px 20px; } }
+  </style>
+</head>
+<body>
+  <div class="tool-top">
+    <div class="container tool-top__inner">
+      <a href="https://bebroggi.it/">← bebroggi.it</a>
+      <a class="gh" href="https://github.com/CryptoPannoz/rendita-affitti" rel="noopener">Open source su GitHub ↗</a>
+    </div>
+  </div>
+
+  <header class="tool-hero">
+    <div class="container">
+      <h1>Quanto rende <em>davvero</em> il tuo immobile?</h1>
+      <p class="lead">
+        Affitto breve turistico, medio termine, 4+4 a canone libero o 3+2 concordato:
+        il confronto giusto non è sul canone lordo, è sul <strong>netto che ti resta</strong>
+        dopo occupazione reale, costi di gestione, cedolare secca e IMU.
+        Metti i tuoi numeri e guarda le quattro strade fianco a fianco.
+      </p>
+      <div class="hero-promise">
+        <span>gratuito</span><span>open source</span><span>nessuna registrazione</span>
+        <span>nessun dato raccolto</span><span>dati OMI · Agenzia Entrate</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="calc">
+    <div class="container">
+
+      <section class="panel" aria-label="Parametri">
+        <h2>I tuoi numeri</h2>
+        <p class="panel__hint">Scegli la città per precompilare tutto con dati di mercato, poi ritocca ogni valore. Il risultato si aggiorna da solo.</p>
+
+        <div class="sub-step"><i>1</i> L'immobile</div>
+        <div class="omi">
+          <div class="omi__row">
+            <div class="omi__f"><span>Città</span>
+              <select id="citta"></select>
+            </div>
+            <div class="omi__f"><span>Metri quadri</span>
+              <input type="number" id="mq" value="70" min="20" max="500" step="5" />
+            </div>
+          </div>
+          <p class="omi__out" id="omi-out"></p>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>Valore dell'immobile <output id="o-valore"></output></label>
+            <input type="number" id="valore" value="140000" min="20000" step="5000" />
+            <small>Serve solo per la rendita in %: precompilato dai valori OMI della tua città.</small>
+          </div>
+          <div class="field">
+            <label>Rendita catastale</label>
+            <input type="number" id="rendcat" value="500" min="50" step="10" />
+            <small>La trovi su una visura o sull'atto. Da qui si calcola l'IMU: base = rendita × 1,05 × 160. Se non la sai, la stima precompilata va bene per un primo confronto.</small>
+          </div>
+        </div>
+
+        <div class="sub-step"><i>2</i> I canoni e i prezzi</div>
+        <div class="grid2">
+          <div class="field">
+            <label>Canone di mercato (4+4) <output id="o-canone"></output></label>
+            <input type="number" id="canone" value="700" min="100" step="25" />
+            <small>€/mese a canone libero, precompilato dai canoni OMI. È la base anche per concordato e medio termine.</small>
+          </div>
+          <div class="field">
+            <label>Sconto del canone concordato <output id="o-sconto"></output></label>
+            <input type="range" id="sconto" value="20" min="0" max="35" step="1" />
+            <small>Rispetto al mercato, secondo l'accordo territoriale del tuo comune. In genere <b>15–25%</b> nelle grandi città.</small>
+          </div>
+          <div class="field">
+            <label>Prezzo medio a notte (affitto breve) <output id="o-adr"></output></label>
+            <input type="number" id="adr" value="80" min="20" step="5" />
+            <small id="adr-fonte">Tariffa media incassata a notte, pulizie escluse.</small>
+          </div>
+          <div class="field">
+            <label>Occupazione dell'affitto breve <output id="o-occ"></output></label>
+            <input type="range" id="occ" value="45" min="10" max="95" step="1" />
+            <small id="occ-fonte">Percentuale di notti vendute sull'anno. La media della città è un punto di partenza, non una promessa.</small>
+          </div>
+          <div class="field">
+            <label>Premio del medio termine <output id="o-premio"></output></label>
+            <input type="range" id="premio" value="15" min="0" max="40" step="1" />
+            <small>Quanto sopra il canone 4+4, perché arredato e con utenze incluse. Tipico <b>+10–20%</b> per studenti e trasfertisti.</small>
+          </div>
+          <div class="field">
+            <label>Mesi affittati nel medio termine <output id="o-mesimedio"></output></label>
+            <input type="range" id="mesimedio" value="11" min="6" max="12" step="0.5" />
+            <small>Contratti transitori da 1 a 18 mesi in catena: qualche settimana vuota tra un inquilino e l'altro è fisiologica.</small>
+          </div>
+        </div>
+
+        <div class="sub-step"><i>3</i> Costi e fisco</div>
+        <div class="grid2">
+          <div class="field">
+            <label>È il tuo unico immobile in affitto breve?</label>
+            <div class="yn" id="yn-unico">
+              <button type="button" data-v="1" class="on">Sì → cedolare 21%</button>
+              <button type="button" data-v="0">No → 26%</button>
+            </div>
+            <small>La cedolare sugli affitti brevi è al <b>26%</b>, ridotta al <b>21%</b> per un solo immobile a tua scelta. Dal 2026 il tetto è di <b>due appartamenti</b>: dal terzo scatta la presunzione d'impresa (partita IVA).</small>
+          </div>
+          <div class="field">
+            <label>Comune ad alta tensione abitativa?</label>
+            <div class="yn" id="yn-alta">
+              <button type="button" data-v="1" class="on">Sì</button>
+              <button type="button" data-v="0">No</button>
+            </div>
+            <small>La cedolare al <b>10%</b> su concordato e transitorio concordato vale <b>solo</b> nei comuni ad alta tensione abitativa (le grandi città e i capoluoghi lo sono quasi tutti). Altrove entrambi scontano il 21%.</small>
+          </div>
+          <div class="field">
+            <label>Aliquota IMU seconde case <output id="o-imu"></output></label>
+            <input type="range" id="aliq" value="10.6" min="7.6" max="11.4" step="0.1" />
+            <small>In ‰ sulla base catastale. Quasi tutte le grandi città stanno al massimo (10,6‰, fino a 11,4‰ dove è confermata la maggiorazione). Col concordato l'IMU si paga al <b>75%</b>.</small>
+          </div>
+          <div class="field">
+            <label>Commissioni piattaforme (OTA) <output id="o-ota"></output></label>
+            <input type="range" id="ota" value="16" min="0" max="25" step="0.5" />
+            <small>Dal 2026 Airbnb è passata alla commissione tutta lato host: <b>15,5%</b> + IVA; Booking <b>15–18%</b>.</small>
+          </div>
+          <div class="field">
+            <label>Gestione operativa affitto breve <output id="o-gest"></output></label>
+            <input type="range" id="gest" value="10" min="0" max="30" step="1" />
+            <small>Lavanderia, consumabili, pulizie non coperte dall'ospite, piccole manutenzioni: in % dei ricavi. Con un property manager completo sali a <b>20–30%</b>.</small>
+          </div>
+          <div class="field">
+            <label>Utenze e wifi annui (breve e medio) <output id="o-utenze"></output></label>
+            <input type="number" id="utenze" value="1800" min="0" step="100" />
+            <small>Le paghi tu quando affitti breve o con utenze incluse. Nel 4+4 e nel concordato le paga l'inquilino.</small>
+          </div>
+          <div class="field">
+            <label>Condominio annuo</label>
+            <input type="number" id="condominio" value="1200" min="0" step="100" />
+            <small>Nel lungo periodo la parte ordinaria si ribalta sull'inquilino: al proprietario resta ~20% (straordinaria). Nel breve e medio è tutta a tuo carico.</small>
+          </div>
+          <div class="field">
+            <label>Manutenzione e assicurazione annue</label>
+            <input type="number" id="manut" value="900" min="0" step="100" />
+            <small>Accantonamento per guasti, imbiancature, polizza casa. Nell'affitto breve l'usura è più alta: il calcolo la maggiora del 50%.</small>
+          </div>
+          <div class="field">
+            <label>Sfitto e rischio nel lungo periodo <output id="o-sfitto"></output></label>
+            <input type="range" id="sfitto" value="4" min="0" max="15" step="0.5" />
+            <small>Mesi vuoti tra inquilini e rischio morosità, in % dei ricavi 4+4. Il concordato gira più veloce: contiamo la metà.</small>
+          </div>
+        </div>
+      </section>
+
+      <!-- Risultati -->
+      <section class="results" id="results" aria-live="polite">
+
+        <div class="card verdict" id="verdict"></div>
+
+        <div class="scen-grid" id="scen-grid"></div>
+
+        <div class="card">
+          <h3>Il netto annuo, a colpo d'occhio</h3>
+          <p class="note">Dopo costi di gestione, cedolare secca e IMU. Prima di eventuali rate del mutuo.</p>
+          <div class="chart-wrap" id="chart"></div>
+        </div>
+
+        <div class="kpis" id="kpis"></div>
+
+        <div class="card">
+          <h3>E se l'occupazione fosse diversa?</h3>
+          <p class="note">Il netto dell'affitto breve alle varie occupazioni, contro il migliore dei contratti lunghi. La riga evidenziata è il tuo valore attuale.</p>
+          <div class="tscroll">
+            <table class="t" id="sens"></table>
+          </div>
+        </div>
+
+        <div class="warnbox">
+          <span>⚠️</span>
+          <p style="margin:0">
+            <b>Questo è un confronto economico, non una previsione.</b> Le medie cittadine di occupazione e prezzo
+            non valgono per il singolo immobile; regole fiscali e regolamenti locali cambiano (CIN, limiti comunali agli
+            affitti brevi, aliquote IMU deliberate ogni anno). Prima di firmare qualsiasi contratto verifica i numeri
+            con il tuo commercialista. Qui non si raccolgono dati: i conti girano tutti nel tuo browser.
+          </p>
+        </div>
+
+        <details class="deep card metodo">
+          <summary><h3>Come calcola (il metodo, tutto dichiarato)</h3><span>apri <b>+</b></span></summary>
+          <div>
+            <ul>
+              <li><b>Affitto breve:</b> ricavi = prezzo a notte × 365 × occupazione. Costi: commissioni OTA, gestione operativa in % dei ricavi, utenze, condominio pieno, manutenzione maggiorata del 50%. Cedolare secca al 26%, o 21% per un solo immobile a scelta, sui ricavi lordi — con la cedolare <b>nessun costo è deducibile</b>. La ritenuta del 21% delle piattaforme è un acconto, non un'imposta in più. IMU piena. Dal 2026 massimo due appartamenti in affitto breve: dal terzo, regime d'impresa (fuori dal perimetro di questo calcolo).</li>
+              <li><b>Medio termine (transitorio):</b> canone = mercato + premio, per i mesi affittati. Utenze e condominio a tuo carico, manutenzione standard, gestione leggera (5% per cambi inquilino e piccoli imprevisti). Cedolare al 21%, oppure al 10% se transitorio concordato in comune ad alta tensione abitativa. IMU piena.</li>
+              <li><b>4+4 canone libero:</b> canone di mercato × 12, meno lo sfitto/rischio. Condominio al 20% (straordinaria), manutenzione standard, niente utenze. Cedolare al 21%. IMU piena.</li>
+              <li><b>3+2 concordato:</b> canone scontato secondo l'accordo territoriale (tabelle per zona e fascia, non a scelta libera), sfitto dimezzato per la domanda più ampia. Cedolare al <b>10%</b> nei comuni ad alta tensione abitativa (21% altrove) e IMU al <b>75%</b> ovunque. Stessi costi del 4+4, più l'attestazione di rispondenza una tantum (~80–200 €, qui trascurata).</li>
+              <li><b>IMU:</b> rendita catastale × 1,05 × 160 × aliquota. La rendita precompilata è una stima grossolana (≈ base imponibile pari a metà del valore di mercato): mettere quella vera cambia il risultato. L'aliquota della tua città è nella delibera comunale sul portale del Dipartimento Finanze (MEF); quasi tutte le grandi città sono al 10,6‰.</li>
+              <li><b>Occupazione precompilata:</b> media tra due metriche pubbliche — l'occupazione sul calendario (AirROI: notti vendute su 365, annunci part-time inclusi) e quella sulle notti disponibili (dati Airbnb: esclude i giorni bloccati dall'host). La prima sottostima un immobile dedicato tutto l'anno, la seconda lo sovrastima un poco: la media è un punto di partenza, non una previsione.</li>
+              <li><b>Cosa resta fuori:</b> l'eventuale mutuo (uguale in tutti gli scenari), il tuo tempo, l'imposta di soggiorno (a carico dell'ospite), l'ammortamento dell'arredo, l'IRPEF ordinaria come alternativa alla cedolare (quasi mai conveniente per chi ha altri redditi), la tassazione in regime d'impresa oltre 4 immobili brevi.</li>
+            </ul>
+            <p class="fonte-line" id="fonti-line"></p>
+          </div>
+        </details>
+
+        <details class="deep card faq">
+          <summary><h3>Le domande che fanno tutti</h3><span>apri <b>+</b></span></summary>
+          <div>
+            <h4>Conviene più l'affitto breve o il 4+4?</h4>
+            <p>Dipende quasi tutto dall'occupazione e dai costi di gestione. L'affitto breve incassa di più a parità di notti, ma paga commissioni, pulizie, utenze e — dal secondo immobile — una cedolare al 26%. Sotto una certa occupazione, spesso tra il 40% e il 55%, il contratto lungo rende di più con molto meno lavoro. Guarda il punto di pareggio qui sopra: è il numero più importante della pagina.</p>
+            <h4>Perché il concordato può battere il canone libero?</h4>
+            <p>Perché lo sconto sul canone è spesso più che compensato dal fisco: cedolare al 10% invece che al 21% e IMU al 75%. Con sconti del 15–20% i due contratti si equivalgono in molte città; dove l'IMU è al massimo, il concordato spesso vince. In più affitti più in fretta e con meno rotazione.</p>
+            <h4>Il medio termine è il compromesso perfetto?</h4>
+            <p>Spesso è un ottimo equilibrio: canoni sopra il mercato, occupazione alta, niente commissioni da piattaforma turistica, ospiti che si fermano mesi. Ma l'immobile dev'essere arredato, le utenze restano a tuo carico e tra un inquilino e l'altro qualche settimana si perde. Nei comuni ad alta tensione abitativa il transitorio concordato con cedolare al 10% lo rende molto competitivo.</p>
+            <h4>E se l'occupazione precompilata non fosse realistica per casa mia?</h4>
+            <p>È una media cittadina, non una previsione: il singolo annuncio può stare molto sopra o molto sotto, in base a posizione, qualità, prezzo e recensioni. Muovi il cursore ed esplora la tabella di sensibilità: se il verdetto cambia con 5 punti di occupazione in meno, sei in zona rischio.</p>
+            <h4>Il calcolatore considera il mutuo?</h4>
+            <p>No, di proposito: la rata è identica in tutti e quattro gli scenari, quindi non cambia il confronto — cambia solo quanto del netto ti resta in tasca. Se l'immobile è a leva, sottrai la tua rata annua dal netto di ogni colonna.</p>
+            <h4>Chi c'è dietro questo strumento?</h4>
+            <p>Lo stesso approccio del <a href="https://bebroggi.it/tools/affitto-vs-acquisto.html" style="text-decoration:underline">calcolatore comprare-o-affittare</a>: strumenti gratuiti, open source, senza raccolta dati, con tutte le ipotesi dichiarate. Il codice è su <a href="https://github.com/CryptoPannoz/rendita-affitti" rel="noopener" style="text-decoration:underline">GitHub</a>: puoi verificarlo, clonarlo e adattarlo.</p>
+          </div>
+        </details>
+
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <span>© <span id="anno-f"></span> <a href="https://bebroggi.it/">Alberto Broggi</a></span>
+      <a href="https://github.com/CryptoPannoz/rendita-affitti" rel="noopener">Codice sorgente (MIT)</a>
+      <a href="https://bebroggi.it/tools/affitto-vs-acquisto.html">Comprare o affittare casa?</a>
+      <a href="https://bebroggi.it/tools/holiday-radar/">Holiday Radar</a>
+      <span>Nessun cookie di profilazione, nessun dato raccolto.</span>
+    </div>
+  </footer>
+
+  <script>
+  'use strict';
+  /* ─────────────────────────────────────────────────────────────
+     Parametri fiscali: ogni numero ha un anno. A ogni legge di
+     bilancio vanno riverificati (vedi CLAUDE.md).
+     ───────────────────────────────────────────────────────────── */
+  const FISCO = {
+    anno: 2026,
+    cedBreveUnico: 0.21,   // affitti brevi: ridotta, per un solo immobile a scelta (L. 213/2023)
+    cedBrevePlu: 0.26,     // aliquota standard; dal 2026 max 2 immobili, dal 3° impresa (L. 199/2025)
+    ced44: 0.21,           // 4+4 canone libero
+    cedConc: 0.10,         // 3+2 e transitorio concordato, SOLO comuni alta tensione abitativa
+    cedTrans: 0.21,        // transitorio ordinario (e concordato fuori dai comuni ATA)
+    imuConc: 0.75,         // IMU ridotta al 75% per il concordato
+    imuMolt: 1.05 * 160    // rendita catastale → base imponibile abitazioni
+  };
+
+  const $ = id => document.getElementById(id);
+  const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  const eur = n => (n < 0 ? '−' : '') + fmt(Math.abs(Math.round(n))) + ' €';
+  const pct = n => (n * 100).toLocaleString('it-IT', { maximumFractionDigits: 1 }) + '%';
+
+  /* ── Città: dati OMI + mercato breve ─────────────────────────── */
+  const OMI = (window.OMI && window.OMI.citta) || [];
+  const BREVE = (window.MERCATO_BREVE && window.MERCATO_BREVE.citta) || {};
+  const sel = $('citta');
+  sel.innerHTML = '<option value="">— scegli, o fai da te —</option>' +
+    OMI.map((c, i) => `<option value="${i}">${c.n} (${c.p})</option>`).join('');
+
+  function cittaCorrente() {
+    const i = sel.value;
+    return i === '' ? null : OMI[+i];
+  }
+  function datiBreve(c) {
+    return c ? BREVE[c.n] || null : null;
+  }
+
+  function prefill() {
+    const c = cittaCorrente();
+    const mq = +$('mq').value || 70;
+    const out = $('omi-out');
+    if (!c) { out.textContent = 'Senza città: compila i campi a mano, il confronto funziona uguale.'; render(); return; }
+    const b = datiBreve(c);
+    $('valore').value = Math.round(c.v * mq / 1000) * 1000;
+    $('canone').value = Math.round(c.a * mq / 5) * 5;
+    // Rendita catastale: stima ≈ base imponibile pari a metà del valore di mercato.
+    $('rendcat').value = Math.round(c.v * mq * 0.5 / FISCO.imuMolt / 10) * 10;
+    if (b) {
+      // Media tra occupazione "sulle notti disponibili" e "sul calendario": vedi data/mercato-breve.js.
+      const occStima = b.occAdj ? (b.occAdj + b.occCal) / 2 : b.occCal + 0.05;
+      $('adr').value = Math.round(b.adr * Math.sqrt(mq / 70) / 5) * 5; // scala blanda con la metratura
+      $('occ').value = Math.round(occStima * 100);
+      $('adr-fonte').innerHTML = `Media annunci a ${c.n}: <b>${b.adr} €</b>/notte (dati Airbnb, 2026). Scalata sulla tua metratura, pulizie escluse.`;
+      $('occ-fonte').innerHTML = b.occAdj
+        ? `A ${c.n}: <b>${Math.round(b.occCal * 100)}%</b> sul calendario (AirROI) · <b>${Math.round(b.occAdj * 100)}%</b> sulle notti disponibili (Airbnb). Precompilata la media: il tuo annuncio può stare sopra o sotto.`
+        : `A ${c.n}: <b>${Math.round(b.occCal * 100)}%</b> sul calendario (AirROI), mercato molto stagionale. Precompilata una stima appena sopra.`;
+    } else {
+      // Fallback dichiarato: dal canone mensile, con moltiplicatore prudente.
+      $('adr').value = Math.max(45, Math.round((c.a * mq) / 30 * 2.6 / 5) * 5);
+      $('occ').value = 42;
+      $('adr-fonte').innerHTML = 'Stima dal canone di mercato (nessun dato turistico per questa città): verificala sugli annunci reali della tua zona.';
+      $('occ-fonte').innerHTML = 'Stima prudente in mancanza di dati cittadini: verificala prima di decidere.';
+    }
+    out.innerHTML = `OMI ${window.OMI.periodo}: vendita <b>${fmt(c.v)} €/mq</b> · affitto <b>${c.a} €/mq/mese</b> → precompilati valore, canone e rendita.`;
+    render();
+  }
+  sel.addEventListener('change', prefill);
+  $('mq').addEventListener('input', prefill);
+
+  /* ── Toggle sì/no ────────────────────────────────────────────── */
+  const stato = { unico: true, alta: true };
+  function bindYN(id, key) {
+    const box = $(id);
+    box.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      stato[key] = b.dataset.v === '1';
+      box.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+      render();
+    });
+  }
+  bindYN('yn-unico', 'unico');
+  bindYN('yn-alta', 'alta');
+
+  /* ── Motore ──────────────────────────────────────────────────── */
+  function leggi() {
+    return {
+      valore: +$('valore').value || 0,
+      rendcat: +$('rendcat').value || 0,
+      canone: +$('canone').value || 0,
+      sconto: +$('sconto').value / 100,
+      adr: +$('adr').value || 0,
+      occ: +$('occ').value / 100,
+      premio: +$('premio').value / 100,
+      mesiMedio: +$('mesimedio').value,
+      aliq: +$('aliq').value,
+      ota: +$('ota').value / 100,
+      gest: +$('gest').value / 100,
+      utenze: +$('utenze').value || 0,
+      condominio: +$('condominio').value || 0,
+      manut: +$('manut').value || 0,
+      sfitto: +$('sfitto').value / 100,
+      unico: stato.unico, alta: stato.alta
+    };
+  }
+
+  function scenari(p) {
+    const imuPiena = p.rendcat * FISCO.imuMolt * p.aliq / 1000;
+    const imuConc = imuPiena * FISCO.imuConc;
+
+    // Affitto breve turistico
+    const ricB = p.adr * 365 * p.occ;
+    const aliqB = p.unico ? FISCO.cedBreveUnico : FISCO.cedBrevePlu;
+    const costiB = ricB * (p.ota + p.gest) + p.utenze + p.condominio + p.manut * 1.5;
+    const breve = {
+      k: 'breve', nome: 'Affitto breve', sub: 'turistico · cedolare ' + Math.round(aliqB * 100) + '%',
+      ricavi: ricB, costi: costiB, ced: ricB * aliqB, imu: imuPiena,
+      dett: [['Notti vendute', Math.round(365 * p.occ) + ' notti'],
+             ['Commissioni + gestione', eur(-(ricB * (p.ota + p.gest)))],
+             ['Utenze, condominio, manut.', eur(-(p.utenze + p.condominio + p.manut * 1.5))]]
+    };
+
+    // Medio termine (transitorio)
+    const canM = p.canone * (1 + p.premio);
+    const ricM = canM * p.mesiMedio;
+    const aliqM = p.alta ? FISCO.cedConc : FISCO.cedTrans;
+    const costiM = ricM * 0.05 + p.utenze + p.condominio + p.manut;
+    const medio = {
+      k: 'medio', nome: 'Medio termine', sub: 'transitorio · cedolare ' + Math.round(aliqM * 100) + '%',
+      ricavi: ricM, costi: costiM, ced: ricM * aliqM, imu: imuPiena,
+      dett: [['Canone mensile', eur(canM) + '/mese'],
+             ['Gestione e cambi (5%)', eur(-ricM * 0.05)],
+             ['Utenze, condominio, manut.', eur(-(p.utenze + p.condominio + p.manut))]]
+    };
+
+    // 4+4 canone libero
+    const ric4 = p.canone * 12 * (1 - p.sfitto);
+    const costi4 = p.condominio * 0.2 + p.manut;
+    const lib44 = {
+      k: 'lib44', nome: '4+4 libero', sub: 'canone mercato · cedolare 21%',
+      ricavi: ric4, costi: costi4, ced: ric4 * FISCO.ced44, imu: imuPiena,
+      dett: [['Canone mensile', eur(p.canone) + '/mese'],
+             ['Sfitto e rischio', eur(-(p.canone * 12 * p.sfitto))],
+             ['Condominio 20% + manut.', eur(-costi4)]]
+    };
+
+    // 3+2 concordato (cedolare 10% solo nei comuni ad alta tensione abitativa)
+    const canC = p.canone * (1 - p.sconto);
+    const ricC = canC * 12 * (1 - p.sfitto / 2);
+    const costiC = p.condominio * 0.2 + p.manut;
+    const aliqC = p.alta ? FISCO.cedConc : FISCO.cedTrans;
+    const conc = {
+      k: 'conc', nome: '3+2 concordato', sub: 'cedolare ' + Math.round(aliqC * 100) + '% · IMU −25%',
+      ricavi: ricC, costi: costiC, ced: ricC * aliqC, imu: imuConc,
+      dett: [['Canone mensile', eur(canC) + '/mese'],
+             ['Sfitto e rischio (½)', eur(-(canC * 12 * p.sfitto / 2))],
+             ['Condominio 20% + manut.', eur(-costiC)]]
+    };
+
+    for (const s of [breve, medio, lib44, conc]) {
+      s.netto = s.ricavi - s.costi - s.ced - s.imu;
+      s.yield = p.valore > 0 ? s.netto / p.valore : 0;
+    }
+    return { breve, medio, lib44, conc, imuPiena, imuConc };
+  }
+
+  /* Occupazione alla quale il breve pareggia un netto dato. */
+  function breakEvenOcc(p, target) {
+    const aliqB = p.unico ? FISCO.cedBreveUnico : FISCO.cedBrevePlu;
+    const fissi = p.utenze + p.condominio + p.manut * 1.5;
+    // netto(occ) = adr·365·occ·(1 − ota − gest − ced) − fissi − imu
+    const margine = p.adr * 365 * (1 - p.ota - p.gest - aliqB);
+    if (margine <= 0) return null;
+    const occ = (target + fissi + p.rendcat * FISCO.imuMolt * p.aliq / 1000) / margine;
+    return occ > 0 && occ <= 1.5 ? occ : null;
+  }
+
+  /* ── Render ──────────────────────────────────────────────────── */
+  function render() {
+    const p = leggi();
+    const S = scenari(p);
+    const lista = [S.breve, S.medio, S.lib44, S.conc];
+    const best = lista.slice().sort((a, b) => b.netto - a.netto)[0];
+    const secondo = lista.slice().sort((a, b) => b.netto - a.netto)[1];
+
+    // Output inline
+    $('o-valore').value = eur(p.valore);
+    $('o-canone').value = eur(p.canone) + '/mese';
+    $('o-sconto').value = '−' + Math.round(p.sconto * 100) + '%';
+    $('o-adr').value = eur(p.adr) + '/notte';
+    $('o-occ').value = Math.round(p.occ * 100) + '% · ' + Math.round(365 * p.occ) + ' notti';
+    $('o-premio').value = '+' + Math.round(p.premio * 100) + '%';
+    $('o-mesimedio').value = p.mesiMedio + ' mesi';
+    $('o-imu').value = p.aliq.toLocaleString('it-IT') + '‰ → ' + eur(S.imuPiena) + '/anno';
+    $('o-ota').value = Math.round(p.ota * 100) + '%';
+    $('o-gest').value = Math.round(p.gest * 100) + '%';
+    $('o-utenze').value = eur(p.utenze);
+    $('o-sfitto').value = pct(p.sfitto);
+
+    // Verdetto
+    const delta = best.netto - secondo.netto;
+    const c = cittaCorrente();
+    $('verdict').innerHTML = `
+      <small>Con questi numeri${c ? ' a ' + c.n : ''} · anno fiscale ${FISCO.anno}</small>
+      <strong>Vince <em>${best.nome.toLowerCase()}</em>: ${eur(best.netto)} netti l'anno</strong>
+      <p>${eur(best.netto / 12)} al mese dopo costi, cedolare e IMU — <b>${pct(best.yield)}</b> netto sul valore
+      dell'immobile. Il secondo classificato è ${secondo.nome} a ${eur(secondo.netto)}:
+      ${delta < 1200 ? 'praticamente un pareggio, scegli in base al lavoro che vuoi farci' : 'un vantaggio di ' + eur(delta) + " l'anno"}.</p>`;
+
+    // Card scenari
+    $('scen-grid').innerHTML = lista.map(s => `
+      <div class="scen${s === best ? ' win' : ''}" data-k="${s.k}">
+        ${s === best ? '<span class="best">miglior netto</span>' : ''}
+        <h4>${s.nome}</h4><span class="sub">${s.sub}</span>
+        <span class="netto${s.netto < 0 ? ' neg' : ''}">${eur(s.netto)}</span>
+        <span class="permese">${eur(s.netto / 12)}/mese · netto</span>
+        <span class="yield">${pct(s.yield)} sul valore</span>
+        <table>
+          <tr><td>Ricavi lordi</td><td>${eur(s.ricavi)}</td></tr>
+          ${s.dett.map(d => `<tr><td>${d[0]}</td><td>${d[1]}</td></tr>`).join('')}
+          <tr><td>Cedolare secca</td><td>${eur(-s.ced)}</td></tr>
+          <tr><td>IMU</td><td>${eur(-s.imu)}</td></tr>
+          <tr class="tot"><td>Netto</td><td>${eur(s.netto)}</td></tr>
+        </table>
+      </div>`).join('');
+
+    // Grafico a barre
+    const max = Math.max(...lista.map(s => Math.max(s.netto, 0)), 1);
+    const colori = { breve: 'var(--breve)', medio: 'var(--medio)', lib44: 'var(--lib44)', conc: 'var(--conc)' };
+    const H = 34, GAP = 14, W = 720, LAB = 150;
+    $('chart').innerHTML = `<svg viewBox="0 0 ${W} ${lista.length * (H + GAP)}" role="img" aria-label="Netto annuo a confronto">` +
+      lista.map((s, i) => {
+        const w = Math.max(2, (Math.max(s.netto, 0) / max) * (W - LAB - 120));
+        const y = i * (H + GAP);
+        return `<text x="0" y="${y + H / 2 + 4}" font-size="13" font-weight="650" fill="var(--ink)" font-family="Instrument Sans, sans-serif">${s.nome}</text>
+          <rect x="${LAB}" y="${y}" width="${w}" height="${H}" rx="8" fill="${colori[s.k]}" opacity="${s === best ? 1 : .55}"></rect>
+          <text x="${LAB + w + 10}" y="${y + H / 2 + 4}" font-size="13" font-family="IBM Plex Mono, monospace" fill="var(--ink)">${eur(s.netto)}</text>`;
+      }).join('') + '</svg>';
+
+    // KPI: pareggi e affitto lordo equivalente
+    const bestLungo = [S.medio, S.lib44, S.conc].sort((a, b) => b.netto - a.netto)[0];
+    const be = breakEvenOcc(p, bestLungo.netto);
+    const kpis = [];
+    kpis.push({
+      t: "Pareggio dell'affitto breve",
+      v: be ? Math.round(be * 100) + '% di occupazione' : 'mai',
+      i: be ? `${Math.round(be * 365)} notti l'anno per eguagliare ${bestLungo.nome.toLowerCase()}. Tu ne hai stimate ${Math.round(365 * p.occ)}.`
+            : `Con questi costi l'affitto breve non raggiunge ${bestLungo.nome.toLowerCase()} a nessuna occupazione.`
+    });
+    kpis.push({
+      t: 'Il fisco sul concordato',
+      v: eur((S.lib44.ced + S.lib44.imu) - (S.conc.ced + S.conc.imu)) + ' risparmiati',
+      i: `Cedolare 10% e IMU al 75% contro il 4+4: è quanto compensa lo sconto sul canone (${eur(S.lib44.ricavi - S.conc.ricavi)} di ricavi in meno).`
+    });
+    kpis.push({
+      t: 'Quanto lavoro ti compri',
+      v: best.k === 'breve' ? '~' + Math.round(365 * p.occ / 3) + ' check-in/anno' : 'quasi zero',
+      i: best.k === 'breve' ? 'Con soggiorni medi di 3 notti: pulizie, messaggi, imprevisti. Se non vuoi fartene carico, alza la voce gestione al 20–30%.'
+                            : `${best.nome} vuol dire un inquilino e poca gestione: il netto in classifica è anche il più comodo.`
+    });
+    $('kpis').innerHTML = kpis.map(k => `<div class="kpi"><span>${k.t}</span><b>${k.v}</b><i>${k.i}</i></div>`).join('');
+
+    // Sensibilità occupazione
+    const occs = [.3, .4, .5, .6, .7, .8];
+    const mia = Math.round(p.occ * 20) / 20;
+    if (!occs.includes(mia) && mia >= .1) { occs.push(mia); occs.sort((a, b) => a - b); }
+    $('sens').innerHTML = `<thead><tr><th>Occupazione</th><th>Notti</th><th>Netto affitto breve</th><th>vs ${bestLungo.nome} (${eur(bestLungo.netto)})</th></tr></thead><tbody>` +
+      occs.map(o => {
+        const s = scenari({ ...p, occ: o }).breve;
+        const d = s.netto - bestLungo.netto;
+        return `<tr${Math.abs(o - p.occ) < .026 ? ' class="hit"' : ''}>
+          <td>${Math.round(o * 100)}%</td><td class="num">${Math.round(o * 365)}</td>
+          <td class="num">${eur(s.netto)}</td>
+          <td class="num">${d >= 0 ? '+' : ''}${eur(d).replace('−', '−')}</td></tr>`;
+      }).join('') + '</tbody>';
+
+    // Fonti
+    const fonti = ['OMI — Agenzia delle Entrate, ' + (window.OMI ? window.OMI.periodo : '')];
+    if (window.MERCATO_BREVE) fonti.push(window.MERCATO_BREVE.fonte);
+    $('fonti-line').textContent = 'Fonti dati: ' + fonti.join(' · ') + '. Parametri fiscali: anno ' + FISCO.anno + '.';
+  }
+
+  document.querySelectorAll('input').forEach(el => el.addEventListener('input', () => {
+    if (el.id !== 'mq') render();
+  }));
+  $('anno-f').textContent = new Date().getFullYear();
+
+  /* Trieste come default: casa. */
+  const idxTS = OMI.findIndex(c => c.n === 'Trieste');
+  if (idxTS >= 0) { sel.value = idxTS; prefill(); } else render();
+  </script>
+</body>
+</html>
