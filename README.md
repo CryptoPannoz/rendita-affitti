@@ -20,11 +20,18 @@ Nessuna registrazione, nessun dato raccolto: i conti girano tutti nel browser.
   si precompilano dai **dati OMI dell'Agenzia delle Entrate** (110 capoluoghi);
   prezzo a notte e occupazione dell'affitto breve dalle medie di mercato
   pubbliche (dati Airbnb / AirROI 2025-26) per 14 città turistiche.
-- Ogni parametro è modificabile: commissioni OTA, costi di gestione, utenze,
-  condominio, manutenzione, sfitto, aliquota IMU, sconto del canone concordato.
-- Output: netto annuo e mensile per ciascun regime, rendita netta in % del
-  valore, **punto di pareggio dell'occupazione** per l'affitto breve e tabella
-  di sensibilità.
+- Lo **step 1** separa immobile e regole locali: struttura, dati OMI, rendita
+  catastale, IMU, comune ad alta tensione, accordo territoriale e vincoli
+  turistici.
+- Lo **step 2** raccoglie le quattro opzioni in box indipendenti. Canoni, mesi,
+  costi e trattamento fiscale non si trascinano più da uno scenario all'altro.
+- Ogni box mostra netto annuo e mensile, rendimento e la propria **soglia di
+  pareggio**: canone per 4+4 e 3+2, mesi per il transitorio, occupazione per il
+  turistico.
+- Il 3+2 usa il canone inserito dall'accordo locale, non uno sconto medio; il
+  transitorio prende il 10% e l'IMU ridotta solo quando è concordato e conforme.
+- Nel turistico tariffa e pulizia addebitata formano il lordo fiscale; costo
+  pulizia, piattaforme e gestione restano voci separate e visibili.
 
 ## Cosa non fa
 
@@ -41,9 +48,11 @@ Nessuna registrazione, nessun dato raccolto: i conti girano tutti nel browser.
 git clone https://github.com/CryptoPannoz/rendita-affitti.git
 cd rendita-affitti
 npm run dev      # server statico su http://localhost:8080
+npm test         # verifica formule, aliquote e soglie di pareggio
 ```
 
-Nessuna dipendenza, nessun build: un `index.html`, due file di dati in `data/`.
+Nessuna dipendenza e nessun build: `index.html`, il motore puro `logic.mjs` e
+due file di dati in `data/`.
 
 ## I dati
 

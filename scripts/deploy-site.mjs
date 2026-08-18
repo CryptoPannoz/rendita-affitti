@@ -16,17 +16,19 @@ import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = resolve(ROOT, '..', 'alberto-broggi-site');
+const SITE_CANDIDATES = [
+  resolve(ROOT, '..', 'alberto-broggi-site'),
+  resolve(ROOT, '..', 'site-source')
+];
+const SITE = SITE_CANDIDATES.find(path => existsSync(path));
+if (!SITE) {
+  console.error('Non trovo la repo del sito accanto a questa cartella.');
+  process.exit(1);
+}
 const TARGET = join(SITE, 'tools', 'rendita-affitti');
 
 /** Quello che serve al browser, più gli script per rigenerare i dati. */
-const PAYLOAD = ['index.html', 'data', 'scripts', 'package.json', 'README.md', 'LICENSE'];
-
-if (!existsSync(SITE)) {
-  console.error(`Non trovo il sito in ${SITE}.`);
-  console.error('Clona CryptoPannoz/alberto-broggi-site accanto a questa cartella.');
-  process.exit(1);
-}
+const PAYLOAD = ['index.html', 'logic.mjs', 'data', 'scripts', 'tests', 'package.json', 'README.md', 'LICENSE'];
 
 // Si azzera la destinazione: se un file sparisce qui, deve sparire anche là.
 await rm(TARGET, { recursive: true, force: true });

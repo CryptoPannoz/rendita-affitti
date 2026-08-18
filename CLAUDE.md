@@ -10,9 +10,9 @@ IMU, cedolare secca, tassi di occupazione e costi di gestione.
   la repo `alberto-broggi-site`, sotto `tools/rendita-affitti/`.
 - **Questa repo** è la fonte del codice e la copia open source. Dopo ogni modifica:
   `npm run deploy:site`, poi commit e push **anche** del sito.
-- **Stack**: un solo `index.html` con CSS e JS inline (stesso pattern di
-  `tools/affitto-vs-acquisto.html` del sito), più i dati in `data/`. Nessun
-  framework, nessun build step, nessun login, nessuna raccolta dati.
+- **Stack**: `index.html` statico con CSS e controller inline, `logic.mjs` per
+  il motore puro e testabile, più i dati in `data/`. Nessun framework, nessun
+  build step, nessun login, nessuna raccolta dati.
 - **Lingua**: italiano. Stesso design system del sito (Instrument Sans/Serif,
   IBM Plex Mono, palette paper/ink/blue/orange).
 
@@ -35,6 +35,7 @@ IMU, cedolare secca, tassi di occupazione e costi di gestione.
 
 ```bash
 npm run dev            # server statico locale su :8080
+npm test               # test del motore: fisco, IMU, scenari e soglie
 npm run build:omi      # rigenera data/omi-capoluoghi.js dall'OMI
 npm run deploy:site    # copia il tool dentro ../alberto-broggi-site/tools/rendita-affitti/
 ```
