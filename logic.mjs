@@ -180,5 +180,28 @@ export function breakEvenOcc(grezzi, obiettivo) {
     - (1 - CONSUMI.quotaFissa) * p.consumi;
   if (margine <= 0) return null;
   const occ = (numero(obiettivo) + fissi + calcolaImu(p.rendcat, p.aliq)) / margine;
-  return occ > 0 && occ <= 1.5 ? occ : null;
+  // Oltre il 100% l'obiettivo è fisicamente irraggiungibile: è un "mai".
+  return occ > 0 && occ <= 1 ? occ : null;
+}
+
+/**
+ * Curva mensile di occupazione per la visualizzazione della stagionalità:
+ * moltiplicatori regionali (media 1) × occupazione media, con i mesi che
+ * sforerebbero il tetto saturati e l'eccedenza ridistribuita sugli altri,
+ * così la media annua della curva resta quella dichiarata dall'utente
+ * (possibile finché occupazione ≤ tetto).
+ */
+export function curvaStagionale(occ, mult, cap = 0.98) {
+  const o = quota(occ);
+  let occs = (mult || []).map(m => o * nonNegativo(m));
+  for (let giro = 0; giro < 24; giro++) {
+    let ecc = 0;
+    occs = occs.map(x => { if (x > cap) { ecc += x - cap; return cap; } return x; });
+    if (ecc < 1e-9) break;
+    const liberi = occs.map((x, i) => i).filter(i => occs[i] < cap);
+    if (!liberi.length) break;
+    const somma = liberi.reduce((a, i) => a + occs[i], 0);
+    for (const i of liberi) occs[i] += somma > 0 ? ecc * occs[i] / somma : ecc / liberi.length;
+  }
+  return occs;
 }

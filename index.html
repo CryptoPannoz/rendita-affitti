@@ -603,11 +603,12 @@
   <script type="module">
   /* Il motore (FISCO, scenari, break-even, consumi) vive in logic.mjs, coperto
      dai test in tests/: qui restano interfaccia, i18n e precompilazioni. */
-  import { FISCO, CONSUMI, calcolaScenari, classifica, breakEvenOcc, consumiPieni } from './logic.mjs';
+  import { FISCO, CONSUMI, calcolaScenari, classifica, breakEvenOcc, consumiPieni, curvaStagionale } from './logic.mjs';
 
   const $ = id => document.getElementById(id);
   const fmt = n => String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  const eur = n => (n < 0 ? '−' : '') + fmt(n) + ' €';
+  /* Il segno si decide dopo l'arrotondamento: mai "−0 €". */
+  const eur = n => (n < 0 && Math.round(Math.abs(n)) > 0 ? '−' : '') + fmt(n) + ' €';
   const pct1 = n => (Math.round(n * 1000) / 10).toLocaleString('it-IT') + '%';
 
   /* ─── i18n: italiano sorgente nell'HTML, EN nel dizionario ─── */
@@ -720,7 +721,7 @@
       kpi1i: (notti, nome, mie) => `${notti} notti l’anno per eguagliare ${nome.toLowerCase()}. Tu ne hai stimate ${mie}.`,
       kpi1iMai: nome => `Con questi costi l’affitto breve non raggiunge ${nome.toLowerCase()} a nessuna occupazione.`,
       kpi2t: 'Il fisco sul concordato', kpi2v: d => `${d} risparmiati`,
-      kpi2i: (ric) => `Cedolare 10% e IMU al 75% contro il 4+4: è quanto compensa lo sconto sul canone (${ric} di ricavi in meno).`,
+      kpi2i: (ric, aliq) => `Cedolare ${aliq}% e IMU al 75% contro il 4+4: è quanto compensa lo sconto sul canone (${ric} di ricavi in meno).`,
       kpi3t: 'Quanto lavoro ti compri', kpi3vBreve: n => `~${n} check-in/anno`, kpi3vAltro: 'quasi zero',
       kpi3iBreve: 'Con soggiorni medi di 3 notti: pulizie, messaggi, imprevisti. Se non vuoi fartene carico, alza la voce gestione al 20–30%.',
       kpi3iAltro: nome => `${nome} vuol dire un inquilino e poca gestione: il primo in classifica è anche il più comodo.`,
@@ -762,7 +763,7 @@
       kpi1i: (notti, nome, mie) => `${notti} nights a year to match the ${nome.toLowerCase()}. You estimated ${mie}.`,
       kpi1iMai: nome => `With these costs the short-term rental never catches the ${nome.toLowerCase()} at any occupancy.`,
       kpi2t: 'Taxes on the controlled 3+2', kpi2v: d => `${d} saved`,
-      kpi2i: (ric) => `10% flat tax and 75% IMU versus the 4+4: this is what offsets the rent discount (${ric} less revenue).`,
+      kpi2i: (ric, aliq) => `${aliq}% flat tax and 75% IMU versus the 4+4: this is what offsets the rent discount (${ric} less revenue).`,
       kpi3t: 'How much work you buy', kpi3vBreve: n => `~${n} check-ins/yr`, kpi3vAltro: 'almost none',
       kpi3iBreve: 'With 3-night average stays: cleanings, messages, surprises. If you’d rather not, raise running costs to 20–30%.',
       kpi3iAltro: nome => `${nome} means one tenant and little management: the top of the ranking is also the most comfortable.`,
@@ -957,7 +958,7 @@
     // Stagionalità della regione (Eurostat), riscalata sull'occupazione scelta
     const reg = regioneCorrente();
     if (reg && reg.m && reg.m.length === 12) {
-      const occs = reg.m.map(m => Math.min(0.98, p.occ * m));
+      const occs = curvaStagionale(p.occ, reg.m);
       const maxOcc = Math.max(...occs, 0.01);
       $('stagio-bars').innerHTML = occs.map((o, i) =>
         `<i style="height:${Math.max(4, Math.round(o / maxOcc * 100))}%" title="${Math.round(o * 100)}%"></i>`).join('');
@@ -992,7 +993,7 @@
         i: be ? t.kpi1i(Math.round(be * 365), bestLungo.nome, Math.round(365 * p.occ)) : t.kpi1iMai(bestLungo.nome) },
       { t: t.kpi2t,
         v: t.kpi2v(eur((S.lib44.ced + S.lib44.imu) - (S.conc.ced + S.conc.imu))),
-        i: t.kpi2i(eur(S.lib44.ricavi - S.conc.ricavi)) },
+        i: t.kpi2i(eur(S.lib44.ricavi - S.conc.ricavi), Math.round(S.conc.aliq * 100)) },
       { t: t.kpi3t,
         v: best.k === 'breve' ? t.kpi3vBreve(Math.round(365 * p.occ / 3)) : t.kpi3vAltro,
         i: best.k === 'breve' ? t.kpi3iBreve : t.kpi3iAltro(best.nome) }

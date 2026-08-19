@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { FISCO, CONSUMI, calcolaImu, calcolaScenari, classifica, breakEvenOcc, normalizza, consumiPieni, consumiEffettivi } from '../logic.mjs';
+import { FISCO, CONSUMI, calcolaImu, calcolaScenari, classifica, breakEvenOcc, normalizza, consumiPieni, consumiEffettivi, curvaStagionale } from '../logic.mjs';
 
 const vicino = (a, b, tolleranza = 0.01) =>
   assert.ok(Math.abs(a - b) <= tolleranza, `atteso ${b}, ottenuto ${a}`);
@@ -110,9 +110,27 @@ test('break-even: al punto di pareggio il netto del breve coincide con l\'obiett
   vicino(verifica.breve.netto, s.lib44.netto, 0.5);
 });
 
-test('break-even: null quando il margine per notte è nullo o serve occupazione irrealistica', () => {
+test('break-even: null quando il margine è nullo o servirebbe più del 100% di occupazione', () => {
   assert.equal(breakEvenOcc({ ...trieste, ota: 0.5, gest: 0.4 }, 1000), null); // margine ≤ 0
-  assert.equal(breakEvenOcc({ ...trieste, adr: 20 }, 50000), null);            // > 150%
+  assert.equal(breakEvenOcc({ ...trieste, adr: 20 }, 50000), null);            // ben oltre il 100%
+  // Caso del verificatore: ADR 55, obiettivo raggiungibile solo al ~120% → "mai", non un numero
+  assert.equal(breakEvenOcc({ ...trieste, adr: 55 }, 7777), null);
+  // Ma un obiettivo raggiungibile sotto il 100% resta un numero
+  assert.ok(breakEvenOcc({ ...trieste, adr: 55 }, 3000) < 1);
+});
+
+test('curva stagionale: satura i picchi al 98% ma conserva la media annua', () => {
+  const liguria = [0.21, 0.25, 0.34, 1.04, 1.09, 1.50, 2.29, 2.50, 1.31, 0.83, 0.23, 0.41];
+  for (const occ of [0.3, 0.6, 0.8, 0.95]) {
+    const c = curvaStagionale(occ, liguria);
+    assert.equal(c.length, 12);
+    assert.ok(Math.max(...c) <= 0.98 + 1e-9, `picco oltre il tetto a occ=${occ}`);
+    const media = c.reduce((a, b) => a + b, 0) / 12;
+    vicino(media, occ, 0.005);
+  }
+  // Sotto la soglia di saturazione la curva è la semplice proporzione
+  const bassa = curvaStagionale(0.2, liguria);
+  vicino(bassa[7], 0.2 * 2.50, 1e-9);
 });
 
 test('input sporchi: NaN, negativi e quote oltre 1 non producono mai NaN', () => {
