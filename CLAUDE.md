@@ -22,6 +22,17 @@ IMU, cedolare secca, tassi di occupazione e costi di gestione.
   resettare i valori inseriti**: ritraduce e basta (`setStatic` + `notes` +
   `render`, mai `prefill`). Stesso design system del sito.
 
+## Layout (deciso da Alberto il 19/08/2026)
+
+- **Un box "L'immobile"** in cima (città, mq, valore, rendita catastale con
+  info ⓘ sulla stima, aliquota IMU, occupanti→consumi, condominio, manutenzione).
+- **Quattro card scenario interattive**, nell'ordine **3+2 → 4+4 → medio →
+  breve**: ogni parametro tipico di un regime sta DENTRO la sua card (sconto
+  e alta tensione nel 3+2; canone e sfitto nel 4+4; premio e mesi nel medio;
+  ADR, occupazione, OTA, gestione, unico-immobile e stagionalità nel breve).
+  Le card sono HTML statico: `render()` aggiorna solo i nodi `[data-out]`,
+  mai l'innerHTML dei contenitori con input (si perderebbero focus e handler).
+
 ## Il modello economico (regole decise da Alberto, non toccarle senza chiedere)
 
 - **Medio termine (transitorio)**: di norma canone = canone 4+4 (slider parte da 0),
@@ -35,6 +46,16 @@ IMU, cedolare secca, tassi di occupazione e costi di gestione.
   (toggle), IMU al 75% ovunque.
 - Il **netto** è il protagonista: nelle card sta nel blocco `.hero`, grande,
   prima del dettaglio.
+- **Consumi dagli occupanti**: pieni = 600 € + 450 €/occupante l'anno, poi
+  scalati sulla presenza con quota fissa 30% (`CONSUMI` in logic.mjs). Nel
+  breve la presenza è l'occupazione, nel medio i mesi/12, nei lunghi zero.
+- **Stagionalità (Eurostat tour_ce_omn12)**: `data/stagionalita.js` è
+  generata da `npm run build:stagionalita` (21 regioni NUTS-2, moltiplicatori
+  mensili a media 1). È solo visualizzazione nel box del breve: non cambia
+  il totale annuo.
+- **Riferimenti normativi**: ogni voce di `FISCO` in logic.mjs ha il suo
+  riferimento (legge/articolo/comma) nel commento, verificato ad ago 2026.
+  Se aggiorni un'aliquota, aggiorna il riferimento.
 
 ## Regole del progetto
 

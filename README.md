@@ -24,11 +24,15 @@ Nessuna registrazione, nessun dato raccolto: i conti girano tutti nel browser.
   si precompilano dai **dati OMI dell'Agenzia delle Entrate** (110 capoluoghi);
   prezzo a notte e occupazione dell'affitto breve dalle medie di mercato
   pubbliche (dati Airbnb / AirROI 2025-26) per 14 città turistiche.
-- Ogni parametro è modificabile: commissioni OTA, costi di gestione, utenze,
-  condominio, manutenzione, sfitto, aliquota IMU, sconto del canone concordato.
+- **Ogni regime ha il suo box interattivo** (3+2, 4+4, medio termine, breve):
+  muovi i canoni e i parametri dentro al box e il netto si aggiorna lì.
+- **Consumi stimati dagli occupanti** (600 € + 450 €/persona l'anno) e scalati
+  sulla presenza reale; **stagionalità mensile per regione** dal dataset
+  Eurostat sugli alloggi via piattaforme (tour_ce_omn12).
 - Output: netto annuo e mensile per ciascun regime, rendita netta in % del
   valore, **punto di pareggio dell'occupazione** per l'affitto breve e tabella
-  di sensibilità.
+  di sensibilità. I parametri fiscali in `logic.mjs` portano ciascuno il
+  proprio **riferimento normativo** (legge, articolo, comma).
 
 ## Cosa non fa
 

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { FISCO, calcolaImu, calcolaScenari, classifica, breakEvenOcc, normalizza } from '../logic.mjs';
+import { FISCO, CONSUMI, calcolaImu, calcolaScenari, classifica, breakEvenOcc, normalizza, consumiPieni, consumiEffettivi } from '../logic.mjs';
 
 const vicino = (a, b, tolleranza = 0.01) =>
   assert.ok(Math.abs(a - b) <= tolleranza, `atteso ${b}, ottenuto ${a}`);
@@ -10,7 +10,7 @@ const vicino = (a, b, tolleranza = 0.01) =>
 const trieste = {
   valore: 138000, rendcat: 410, canone: 525, sconto: 0.20,
   adr: 120, occ: 0.49, premio: 0, mesiMedio: 11, aliq: 10.6,
-  ota: 0.16, gest: 0.10, utenze: 1800, condominio: 1200, manut: 900,
+  ota: 0.16, gest: 0.10, consumi: 1500, condominio: 1200, manut: 900,
   sfitto: 0.04, unico: true, alta: true
 };
 
@@ -23,15 +23,18 @@ test('IMU: rendita rivalutata × 1,05 × 160 × aliquota per mille', () => {
 
 test('il caso Trieste torna al centesimo in tutti e quattro gli scenari', () => {
   const s = calcolaScenari(trieste);
-  // Breve: 120×365×0,49 = 21.462 di lordo; 26% variabili; 4.350 fissi (manut ×1,5)
+  // Breve: 120×365×0,49 = 21.462 di lordo; 26% variabili;
+  // consumi 1.500×(0,3+0,7×0,49)=964,50; condominio 1.200; manut ×1,5 = 1.350
   vicino(s.breve.ricavi, 21462);
-  vicino(s.breve.costi, 21462 * 0.26 + 4350);
+  vicino(s.breve.consumi, 964.5);
+  vicino(s.breve.costi, 21462 * 0.26 + 964.5 + 1200 + 1350);
   vicino(s.breve.ced, 21462 * 0.21);
-  vicino(s.breve.netto, 6294.73);
-  // Medio: canone = 4+4 (premio 0) × 11 mesi, consumi inclusi → può andare in negativo
+  vicino(s.breve.netto, 7130.23);
+  // Medio: canone = 4+4 (premio 0) × 11 mesi; consumi 1.500×(0,3+0,7×11/12)=1.412,50
   vicino(s.medio.ricavi, 5775);
-  vicino(s.medio.costi, 5775 * 0.05 + 3900);
-  vicino(s.medio.netto, -356.63);
+  vicino(s.medio.consumi, 1412.5);
+  vicino(s.medio.costi, 5775 * 0.05 + 1412.5 + 1200 + 900);
+  vicino(s.medio.netto, 30.87);
   // 4+4: 12 mesi meno sfitto 4%, condominio al 20%
   vicino(s.lib44.ricavi, 6048);
   vicino(s.lib44.costi, 1140);
@@ -58,6 +61,14 @@ test('breve: 21% per immobile unico, 26% dal secondo', () => {
   vicino(piu.breve.netto, unico.breve.netto - 21462 * 0.05);
 });
 
+test('consumi: base + occupanti, scalati sulla presenza con quota fissa', () => {
+  assert.equal(consumiPieni(2), CONSUMI.baseAnnua + 2 * CONSUMI.perOccupante);
+  vicino(consumiEffettivi(1500, 1), 1500);
+  vicino(consumiEffettivi(1500, 0), 1500 * CONSUMI.quotaFissa);   // casa vuota: solo la quota fissa
+  vicino(consumiEffettivi(1500, 0.49), 964.5);
+  assert.equal(consumiEffettivi(-100, 0.5), 0);
+});
+
 test('concordato fuori dai comuni ad alta tensione: cedolare 21%, IMU comunque al 75%', () => {
   const fuori = calcolaScenari({ ...trieste, alta: false });
   assert.equal(fuori.conc.aliq, FISCO.ced44);
@@ -68,13 +79,14 @@ test('concordato fuori dai comuni ad alta tensione: cedolare 21%, IMU comunque a
 });
 
 test('consumi e condominio: inclusi nel breve e nel medio, all\'inquilino nei contratti lunghi', () => {
-  const senza = calcolaScenari({ ...trieste, utenze: 0 });
+  const senza = calcolaScenari({ ...trieste, consumi: 0 });
   const s = calcolaScenari(trieste);
-  vicino(s.breve.costi - senza.breve.costi, 1800);
-  vicino(s.medio.costi - senza.medio.costi, 1800);
-  vicino(s.lib44.costi, senza.lib44.costi);        // utenze mai nel 4+4
+  vicino(s.breve.costi - senza.breve.costi, consumiEffettivi(1500, 0.49));
+  vicino(s.medio.costi - senza.medio.costi, consumiEffettivi(1500, 11 / 12));
+  vicino(s.lib44.costi, senza.lib44.costi);         // consumi mai nel 4+4
+  vicino(s.conc.costi, senza.conc.costi);           // né nel 3+2
   vicino(s.lib44.costi, 1200 * 0.2 + 900);          // condominio solo al 20%
-  vicino(s.breve.costi, s.breve.ricavi * 0.26 + 1800 + 1200 + 900 * 1.5); // pieno + usura
+  vicino(s.breve.costi, s.breve.ricavi * 0.26 + 964.5 + 1200 + 900 * 1.5); // pieno + usura
 });
 
 test('il medio termine di norma usa il canone del 4+4; il premio lo sposta', () => {
@@ -93,7 +105,7 @@ test('classifica: ordinata per netto decrescente', () => {
 test('break-even: al punto di pareggio il netto del breve coincide con l\'obiettivo', () => {
   const s = calcolaScenari(trieste);
   const be = breakEvenOcc(trieste, s.lib44.netto);
-  assert.ok(be > 0.30 && be < 0.40, `pareggio fuori range: ${be}`);
+  assert.ok(be > 0.25 && be < 0.40, `pareggio fuori range: ${be}`);
   const verifica = calcolaScenari({ ...trieste, occ: be });
   vicino(verifica.breve.netto, s.lib44.netto, 0.5);
 });
@@ -107,7 +119,7 @@ test('input sporchi: NaN, negativi e quote oltre 1 non producono mai NaN', () =>
   const sporchi = calcolaScenari({
     valore: 'boh', rendcat: -5, canone: null, sconto: 7, adr: NaN,
     occ: 2, premio: 'x', mesiMedio: 99, aliq: -1, ota: -3, gest: 9,
-    utenze: undefined, condominio: -10, manut: 'y', sfitto: 5
+    consumi: undefined, condominio: -10, manut: 'y', sfitto: 5
   });
   for (const k of ['breve', 'medio', 'lib44', 'conc']) {
     assert.ok(Number.isFinite(sporchi[k].netto), `${k}.netto non finito`);

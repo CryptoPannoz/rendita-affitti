@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build:omi": "node data/build-omi-capoluoghi.mjs",
+    "build:stagionalita": "node scripts/build-stagionalita.mjs",
     "dev": "python3 -m http.server 8080",
     "test": "node --test",
     "deploy:site": "node scripts/deploy-site.mjs"
