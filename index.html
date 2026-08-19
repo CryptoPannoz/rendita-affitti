@@ -494,21 +494,10 @@
     </div>
   </footer>
 
-  <script>
-  'use strict';
-  /* ─────────────────────────────────────────────────────────────
-     Parametri fiscali: ogni numero ha un anno. A ogni legge di
-     bilancio vanno riverificati (vedi CLAUDE.md).
-     ───────────────────────────────────────────────────────────── */
-  const FISCO = {
-    anno: 2026,
-    cedBreveUnico: 0.21,   // affitti brevi: ridotta, per un solo immobile a scelta (L. 213/2023)
-    cedBrevePlu: 0.26,     // aliquota standard; dal 2026 max 2 immobili, dal 3° impresa (L. 199/2025)
-    ced44: 0.21,           // 4+4 canone libero e transitorio a canone libero
-    cedConc: 0.10,         // 3+2 concordato, SOLO comuni alta tensione abitativa
-    imuConc: 0.75,         // IMU ridotta al 75% per il concordato (ovunque)
-    imuMolt: 1.05 * 160    // rendita catastale → base imponibile abitazioni
-  };
+  <script type="module">
+  /* Il motore (FISCO, scenari, break-even) vive in logic.mjs, coperto dai
+     test in tests/: qui restano interfaccia, i18n e precompilazioni. */
+  import { FISCO, calcolaScenari, classifica, breakEvenOcc } from './logic.mjs';
 
   const $ = id => document.getElementById(id);
   const fmt = n => String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -782,75 +771,24 @@
     };
   }
 
+  /* I numeri arrivano dal motore; qui si aggiungono solo nomi, badge e
+     righe di contesto nella lingua attiva. */
   function scenari(p) {
     const t = DYN[lang];
-    const imuPiena = p.rendcat * FISCO.imuMolt * p.aliq / 1000;
-    const imuConc = imuPiena * FISCO.imuConc;
-
-    // Affitto breve turistico: consumi inclusi, condominio pieno, usura +50%.
-    const ricB = p.adr * 365 * p.occ;
-    const aliqB = p.unico ? FISCO.cedBreveUnico : FISCO.cedBrevePlu;
-    const gestB = ricB * (p.ota + p.gest);
-    const fissiB = p.utenze + p.condominio + p.manut * 1.5;
-    const breve = {
-      k: 'breve', aliq: aliqB, ricavi: ricB, costi: gestB + fissiB,
-      ced: ricB * aliqB, imu: imuPiena,
-      badges: [['incl', t.incl], ['', t.lavoro]],
-      ctx: t.ctx.breve(Math.round(365 * p.occ), eur(p.adr)),
-      costiNota: null
-    };
-
-    // Medio termine (transitorio a canone libero): di norma canone ≈ 4+4, consumi inclusi.
-    const canM = p.canone * (1 + p.premio);
-    const ricM = canM * p.mesiMedio;
-    const medio = {
-      k: 'medio', aliq: FISCO.ced44, ricavi: ricM,
-      costi: ricM * 0.05 + p.utenze + p.condominio + p.manut,
-      ced: ricM * FISCO.ced44, imu: imuPiena,
-      badges: [['incl', t.incl], ['', t.arredato]],
-      ctx: t.ctx.medio(eur(canM), p.mesiMedio)
-    };
-
-    // 4+4 canone libero: utenze all'inquilino, condominio 20%.
-    const ric4 = p.canone * 12 * (1 - p.sfitto);
-    const lib44 = {
-      k: 'lib44', aliq: FISCO.ced44, ricavi: ric4,
-      costi: p.condominio * 0.2 + p.manut,
-      ced: ric4 * FISCO.ced44, imu: imuPiena,
-      badges: [['', t.escl], ['', t.zeroSbatti]],
-      ctx: t.ctx.lib44(eur(p.canone))
-    };
-
-    // 3+2 concordato: cedolare 10% solo comuni ATA, IMU 75% ovunque.
-    const canC = p.canone * (1 - p.sconto);
-    const ricC = canC * 12 * (1 - p.sfitto / 2);
-    const aliqC = p.alta ? FISCO.cedConc : FISCO.ced44;
-    const conc = {
-      k: 'conc', aliq: aliqC, ricavi: ricC,
-      costi: p.condominio * 0.2 + p.manut,
-      ced: ricC * aliqC, imu: imuConc,
-      badges: [['', t.escl], ['', t.zeroSbatti]],
-      ctx: t.ctx.conc(eur(canC))
-    };
-
-    for (const s of [breve, medio, lib44, conc]) {
+    const S = calcolaScenari(p);
+    S.breve.badges = [['incl', t.incl], ['', t.lavoro]];
+    S.breve.ctx = t.ctx.breve(Math.round(S.breve.notti), eur(p.adr));
+    S.medio.badges = [['incl', t.incl], ['', t.arredato]];
+    S.medio.ctx = t.ctx.medio(eur(S.medio.canone), p.mesiMedio);
+    S.lib44.badges = [['', t.escl], ['', t.zeroSbatti]];
+    S.lib44.ctx = t.ctx.lib44(eur(S.lib44.canone));
+    S.conc.badges = [['', t.escl], ['', t.zeroSbatti]];
+    S.conc.ctx = t.ctx.conc(eur(S.conc.canone));
+    for (const s of [S.breve, S.medio, S.lib44, S.conc]) {
       s.nome = t.nomi[s.k];
       s.sub = t.sub[s.k](Math.round(s.aliq * 100));
-      s.netto = s.ricavi - s.costi - s.ced - s.imu;
-      s.yield = p.valore > 0 ? s.netto / p.valore : 0;
     }
-    return { breve, medio, lib44, conc, imuPiena, imuConc };
-  }
-
-  /* Occupazione alla quale il breve pareggia un netto dato. */
-  function breakEvenOcc(p, target) {
-    const aliqB = p.unico ? FISCO.cedBreveUnico : FISCO.cedBrevePlu;
-    const fissi = p.utenze + p.condominio + p.manut * 1.5;
-    // netto(occ) = adr·365·occ·(1 − ota − gest − ced) − fissi − imu
-    const margine = p.adr * 365 * (1 - p.ota - p.gest - aliqB);
-    if (margine <= 0) return null;
-    const occ = (target + fissi + p.rendcat * FISCO.imuMolt * p.aliq / 1000) / margine;
-    return occ > 0 && occ <= 1.5 ? occ : null;
+    return S;
   }
 
   /* ── Render ──────────────────────────────────────────────────── */
@@ -859,7 +797,7 @@
     const p = leggi();
     const S = scenari(p);
     const lista = [S.breve, S.medio, S.lib44, S.conc];
-    const orden = lista.slice().sort((a, b) => b.netto - a.netto);
+    const orden = classifica(S);
     const best = orden[0], secondo = orden[1];
 
     $('promise').innerHTML = t.promise.map(x => `<span>${x}</span>`).join('');
@@ -884,7 +822,7 @@
     $('verdict').innerHTML = `
       <small>${t.vSmall(c && c.n, FISCO.anno)}</small>
       <strong>${t.vTitolo(best.nome, eur(best.netto))}</strong>
-      <p>${t.vTesto(eur(best.netto / 12), pct1(best.yield), secondo.nome, eur(secondo.netto), eur(delta), delta < 1200)}</p>`;
+      <p>${t.vTesto(eur(best.netto / 12), pct1(best.rendimento), secondo.nome, eur(secondo.netto), eur(delta), delta < 1200)}</p>`;
 
     // Card scenari: struttura identica per tutte, il netto davanti a tutto.
     $('scen-grid').innerHTML = lista.map(s => `
@@ -894,7 +832,7 @@
         <div class="hero">
           <u>${t.nettoAnno}</u>
           <b class="${s.netto < 0 ? 'neg' : ''}">${eur(s.netto)}</b>
-          <i>${t.alMese(eur(s.netto / 12))} · ${t.sulValore(pct1(s.yield))}</i>
+          <i>${t.alMese(eur(s.netto / 12))} · ${t.sulValore(pct1(s.rendimento))}</i>
         </div>
         <div class="badges">${s.badges.map(b => `<span class="${b[0]}">${b[1]}</span>`).join('')}</div>
         <table>

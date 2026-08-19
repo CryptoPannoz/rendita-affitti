@@ -45,9 +45,12 @@ Nessuna registrazione, nessun dato raccolto: i conti girano tutti nel browser.
 git clone https://github.com/CryptoPannoz/rendita-affitti.git
 cd rendita-affitti
 npm run dev      # server statico su http://localhost:8080
+npm test         # test del motore di calcolo (node --test, zero dipendenze)
 ```
 
-Nessuna dipendenza, nessun build: un `index.html`, due file di dati in `data/`.
+Nessuna dipendenza, nessun build: `index.html` (interfaccia bilingue),
+`logic.mjs` (il motore di calcolo, testato in `tests/`), due file di dati
+in `data/`.
 
 ## I dati
 

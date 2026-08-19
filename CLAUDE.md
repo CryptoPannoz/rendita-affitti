@@ -10,9 +10,12 @@ IMU, cedolare secca, tassi di occupazione e costi di gestione.
   la repo `alberto-broggi-site`, sotto `tools/rendita-affitti/`.
 - **Questa repo** è la fonte del codice e la copia open source. Dopo ogni modifica:
   `npm run deploy:site`, poi commit e push **anche** del sito.
-- **Stack**: un solo `index.html` con CSS e JS inline (stesso pattern di
-  `tools/affitto-vs-acquisto.html` del sito), più i dati in `data/`. Nessun
-  framework, nessun build step, nessun login, nessuna raccolta dati.
+- **Stack**: `index.html` (interfaccia, CSS e i18n inline) + **`logic.mjs`**
+  (il motore di calcolo, modulo ES puro senza DOM, coperto dai test in
+  `tests/`) + i dati in `data/`. Nessun framework, nessun build step, nessun
+  login, nessuna raccolta dati. **La matematica vive solo in `logic.mjs`**:
+  se tocchi il motore, `npm test` deve passare prima di committare, e se
+  cambi una regola aggiorna anche il test che la fissa.
 - **Lingue**: italiano (sorgente, nell'HTML) e inglese, con interruttore in alto.
   L'EN sta nel dizionario `EN` (nodi statici, via `data-i18n`/`data-i18n-html`)
   e in `DYN.en` (stringhe generate dal motore). Cambiare lingua **non deve mai
@@ -51,6 +54,7 @@ IMU, cedolare secca, tassi di occupazione e costi di gestione.
 ## Comandi
 
 ```bash
+npm test               # test del motore (obbligatori prima di ogni commit)
 npm run dev            # server statico locale su :8080
 npm run build:omi      # rigenera data/omi-capoluoghi.js dall'OMI
 npm run deploy:site    # copia il tool dentro ../alberto-broggi-site/tools/rendita-affitti/

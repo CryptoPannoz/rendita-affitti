@@ -20,7 +20,7 @@ const SITE = resolve(ROOT, '..', 'alberto-broggi-site');
 const TARGET = join(SITE, 'tools', 'rendita-affitti');
 
 /** Quello che serve al browser, più gli script per rigenerare i dati. */
-const PAYLOAD = ['index.html', 'data', 'scripts', 'package.json', 'README.md', 'LICENSE'];
+const PAYLOAD = ['index.html', 'logic.mjs', 'data', 'scripts', 'tests', 'package.json', 'README.md', 'LICENSE'];
 
 if (!existsSync(SITE)) {
   console.error(`Non trovo il sito in ${SITE}.`);
