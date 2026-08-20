@@ -63,7 +63,8 @@ in `data/`.
 ## Il cancello dei risultati (email + Firebase)
 
 I risultati non compaiono in tempo reale: si compilano immobile e canoni, si
-clicca **«Calcola il verdetto»** e il tool dice solo chi vince. Il dettaglio
+configurano tutti e quattro i box e, solo sotto di essi, si clicca
+**«Calcola il verdetto»**: il tool dice solo chi vince. Il dettaglio
 (netti, grafico, pareggio, sensibilità), il PDF e la condivisione si sbloccano
 lasciando un'email, salvata su **Cloud Firestore** (progetto `rendita-affitti`,
 regione `eur3`, collezione `rendita-leads`). L'SDK viene importato solo al

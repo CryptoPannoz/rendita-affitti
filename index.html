@@ -206,6 +206,10 @@
     .card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 26px; }
     .card > h3 { margin: 0 0 4px; font-size: 1.05rem; font-weight: 650; letter-spacing: -.03em; }
     .card > p.note { margin: 0 0 18px; color: var(--muted); font-size: .74rem; }
+    .scen-intro { display: flex; align-items: center; gap: 12px; padding: 10px 4px 2px; }
+    .scen-intro > span { display: grid; place-items: center; flex: 0 0 auto; width: 34px; height: 34px; border-radius: 11px; background: var(--ink); color: var(--lime); font-family: var(--mono); font-size: .72rem; }
+    .scen-intro h2 { margin: 0; font-size: 1.15rem; font-weight: 650; letter-spacing: -.035em; }
+    .scen-intro p { margin: 3px 0 0; color: var(--muted); font-size: .7rem; }
 
     .verdict { background: var(--ink); color: white; border-color: var(--ink); padding: 30px 28px; }
     .verdict small { display: block; color: rgba(255,255,255,.72); font-family: var(--mono); font-size: .64rem; text-transform: uppercase; letter-spacing: .09em; }
@@ -491,7 +495,13 @@
       <!-- ═══ 2 · I QUATTRO SCENARI, ciascuno coi suoi parametri ═══ -->
       <section class="results" id="results" aria-live="polite">
 
-        <div class="card verdict" id="verdict"></div>
+        <div class="scen-intro">
+          <span>2</span>
+          <div>
+            <h2 data-i18n="flow.scen.h2">Configura i quattro scenari</h2>
+            <p data-i18n="flow.scen.p">Imposta canoni, costi e occupazione: il verdetto arriva solo quando hai finito.</p>
+          </div>
+        </div>
 
         <div class="scen-grid">
 
@@ -659,6 +669,9 @@
           </div>
         </div>
 
+        <!-- ═══ 3 · IL VERDETTO: solo dopo aver configurato i quattro scenari ═══ -->
+        <div class="card verdict" id="verdict"></div>
+
         <div class="card" id="card-chart">
           <h3 data-i18n="chart.h3">Il netto annuo, a colpo d'occhio</h3>
           <p class="note" data-i18n="chart.note">Dopo costi di gestione, cedolare secca e IMU. Prima di eventuali rate del mutuo.</p>
@@ -755,6 +768,8 @@
     'hero.lead': 'Controlled-rent 3+2, open-market 4+4, mid-term lets or short-term tourist rental: the fair comparison is not the gross rent, it is the <strong>net you actually keep</strong> after real occupancy, running costs, the flat tax (cedolare secca) and IMU property tax. Describe the property, set the rents inside each box, then compute the verdict.',
     'casa.h2': 'The property',
     'casa.hint': 'The common base: it applies to all four scenarios below.',
+    'flow.scen.h2': 'Configure the four scenarios',
+    'flow.scen.p': 'Set rents, costs and occupancy: the verdict comes only when you are done.',
     'omi.citta': 'City', 'omi.mq': 'Square metres',
     'f.valore': 'Property value',
     'f.valore.s': 'Only used for the yield in %: pre-filled from official OMI values.',
@@ -926,7 +941,7 @@
   /* ─── Cancello dei risultati: i testi delle tre fasi ─── */
   const GATE = {
     it: {
-      small: 'Quattro scenari, un vincitore',
+      small: '3 · Calcola il verdetto',
       titolo: 'Chi vince con i tuoi numeri?',
       testo: 'Descrivi l’immobile e regola i canoni dei quattro scenari qui sopra, poi calcola: il confronto è sul netto che resta dopo costi, cedolare e IMU.',
       btn: 'Calcola il verdetto →',
@@ -940,7 +955,7 @@
       pdf: 'Scarica il PDF', condividi: 'Condividi la pagina', copiato: 'Link copiato ✓'
     },
     en: {
-      small: 'Four scenarios, one winner',
+      small: '3 · Compute the verdict',
       titolo: 'Who wins with your numbers?',
       testo: 'Describe the property and set the rents in the four scenario boxes above, then compute: the comparison is on the net you keep after costs, flat tax and IMU.',
       btn: 'Compute the verdict →',
