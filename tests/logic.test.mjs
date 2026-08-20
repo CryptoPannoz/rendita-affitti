@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { FISCO, CONSUMI, calcolaImu, calcolaScenari, classifica, breakEvenOcc, normalizza, consumiPieni, consumiEffettivi, curvaStagionale } from '../logic.mjs';
+import { FISCO, CONSUMI, calcolaImu, calcolaScenari, classifica, breakEvenOcc, normalizza, consumiPieni, consumiEffettivi, calcolaConsumiVoci, trovaSogliaLordoMensile, curvaStagionale } from '../logic.mjs';
 
 const vicino = (a, b, tolleranza = 0.01) =>
   assert.ok(Math.abs(a - b) <= tolleranza, `atteso ${b}, ottenuto ${a}`);
@@ -67,6 +67,54 @@ test('consumi: base + occupanti, scalati sulla presenza con quota fissa', () => 
   vicino(consumiEffettivi(1500, 0), 1500 * CONSUMI.quotaFissa);   // casa vuota: solo la quota fissa
   vicino(consumiEffettivi(1500, 0.49), 964.5);
   assert.equal(consumiEffettivi(-100, 0.5), 0);
+});
+
+test('calcolatore consumi: kWh, Smc, acqua, internet e altro tornano al centesimo', () => {
+  const c = calcolaConsumiVoci({
+    luceKwh: 1800, luceTariffa: 0.30,
+    gasSmc: 400, gasTariffa: 1,
+    acqua: 200, internetMensile: 30, altro: 25
+  });
+  vicino(c.luce, 540);
+  vicino(c.gas, 400);
+  vicino(c.internet, 360);
+  vicino(c.totale, 1525);
+});
+
+test('canoni e manutenzioni possono essere regolati indipendentemente per scenario', () => {
+  const p = {
+    ...trieste,
+    canoneConc: 430, canoneLib44: 560, canoneMedio: 680,
+    manutConc: 700, manutLib44: 800, manutMedio: 1100, manutBreve: 1600
+  };
+  const s = calcolaScenari(p);
+  vicino(s.conc.canone, 430);
+  vicino(s.lib44.canone, 560);
+  vicino(s.medio.canone, 680);
+  vicino(s.conc.costi, trieste.condominio * 0.2 + 700);
+  vicino(s.lib44.costi, trieste.condominio * 0.2 + 800);
+  vicino(s.medio.costi, s.medio.ricavi * 0.05 + s.medio.consumi + trieste.condominio + 1100);
+  vicino(s.breve.costi, s.breve.ricavi * (trieste.ota + trieste.gest) + s.breve.consumi + trieste.condominio + 1600);
+});
+
+test('soglia di lordo mensile: ogni scenario raggiunge il netto obiettivo', () => {
+  const base = {
+    ...trieste,
+    canoneConc: 420, canoneLib44: 525, canoneMedio: 600,
+    manutConc: 900, manutLib44: 900, manutMedio: 1100, manutBreve: 1350
+  };
+  for (const chiave of ['conc', 'lib44', 'medio', 'breve']) {
+    const altri = classifica(calcolaScenari(base)).filter(s => s.k !== chiave);
+    const target = altri[0].netto;
+    const soglia = trovaSogliaLordoMensile(base, chiave, target);
+    assert.ok(Number.isFinite(soglia) && soglia >= 0, `${chiave}: soglia non valida`);
+    const p = { ...base };
+    if (chiave === 'breve') p.adr = soglia * 12 / (365 * base.occ);
+    else if (chiave === 'conc') p.canoneConc = soglia;
+    else if (chiave === 'lib44') p.canoneLib44 = soglia;
+    else p.canoneMedio = soglia;
+    vicino(calcolaScenari(p)[chiave].netto, target, 0.01);
+  }
 });
 
 test('concordato fuori dai comuni ad alta tensione: cedolare 21%, IMU comunque al 75%', () => {

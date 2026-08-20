@@ -25,10 +25,13 @@ Nessuna registrazione, nessun dato raccolto: i conti girano tutti nel browser.
   prezzo a notte e occupazione dell'affitto breve dalle medie di mercato
   pubbliche (dati Airbnb / AirROI 2025-26) per 14 città turistiche.
 - **Ogni regime ha il suo box interattivo** (3+2, 4+4, medio termine, breve):
-  muovi i canoni e i parametri dentro al box e il netto si aggiorna lì.
-- **Consumi stimati dagli occupanti** (600 € + 450 €/persona l'anno) e scalati
-  sulla presenza reale; **stagionalità mensile per regione** dal dataset
-  Eurostat sugli alloggi via piattaforme (tour_ce_omn12).
+  regola il lordo mensile e leggi sulla stessa linea la **soglia oltre la quale
+  lo scenario batte la migliore alternativa**. Canone e manutenzione sono
+  indipendenti per ciascuno scenario, compreso il maggior costo del breve.
+- **Calcolatore dei consumi trasparente**: kWh × tariffa per la luce, Smc ×
+  tariffa per il gas, acqua, Wi-Fi e altre voci. Il totale viene scalato sulla
+  presenza reale; **stagionalità mensile per regione** dal dataset Eurostat
+  sugli alloggi via piattaforme (tour_ce_omn12).
 - Output: netto annuo e mensile per ciascun regime, rendita netta in % del
   valore, **punto di pareggio dell'occupazione** per l'affitto breve e tabella
   di sensibilità. I parametri fiscali in `logic.mjs` portano ciascuno il

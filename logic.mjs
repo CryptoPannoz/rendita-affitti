@@ -6,11 +6,11 @@
  * sono quelle decise da Alberto e documentate in CLAUDE.md:
  *
  * - Affitto breve: consumi inclusi (a carico host), condominio pieno,
- *   manutenzione +50%, cedolare 26% (21% per un solo immobile a scelta).
+ *   manutenzione specifica più alta, cedolare 26% (21% per un solo immobile a scelta).
  * - Medio termine (transitorio): di norma canone = 4+4 (il "premio" parte
  *   da zero), consumi inclusi, condominio pieno, gestione 5%, cedolare 21%.
- *   Il 10% del transitorio concordato richiede il canone da tabelle e non
- *   è modellato.
+ *   Canone e manutenzione sono regolabili nello scenario. Il 10% del
+ *   transitorio concordato richiede il canone da tabelle e non è modellato.
  * - 4+4: utenze all'inquilino, condominio al 20% (straordinaria), sfitto
  *   pieno, cedolare 21%.
  * - 3+2 concordato: canone scontato, sfitto dimezzato, cedolare 10% solo
@@ -55,6 +55,16 @@ export function consumiEffettivi(pieni, presenza) {
   return nonNegativo(pieni) * (CONSUMI.quotaFissa + (1 - CONSUMI.quotaFissa) * quota(presenza));
 }
 
+/** Dettaglio trasparente dei consumi annuali inseriti nel calcolatore. */
+export function calcolaConsumiVoci(v = {}) {
+  const luce = nonNegativo(v.luceKwh) * nonNegativo(v.luceTariffa);
+  const gas = nonNegativo(v.gasSmc) * nonNegativo(v.gasTariffa);
+  const acqua = nonNegativo(v.acqua);
+  const internet = nonNegativo(v.internetMensile) * 12;
+  const altro = nonNegativo(v.altro);
+  return { luce, gas, acqua, internet, altro, totale: luce + gas + acqua + internet + altro };
+}
+
 const numero = (v, fallback = 0) => {
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
@@ -69,21 +79,32 @@ export function calcolaImu(renditaCatastale, aliquotaPerMille) {
 
 /** Normalizza i parametri grezzi (input utente) in valori sicuri. */
 export function normalizza(p = {}) {
+  const canone = nonNegativo(p.canone);
+  const sconto = quota(p.sconto);
+  const premio = Math.max(-1, numero(p.premio));
+  const manut = nonNegativo(p.manut);
   return {
     valore: nonNegativo(p.valore),
     rendcat: nonNegativo(p.rendcat),
-    canone: nonNegativo(p.canone),
-    sconto: quota(p.sconto),
+    canone,
+    canoneConc: p.canoneConc == null ? canone * (1 - sconto) : nonNegativo(p.canoneConc),
+    canoneLib44: p.canoneLib44 == null ? canone : nonNegativo(p.canoneLib44),
+    canoneMedio: p.canoneMedio == null ? canone * (1 + premio) : nonNegativo(p.canoneMedio),
+    sconto,
     adr: nonNegativo(p.adr),
     occ: quota(p.occ),
-    premio: Math.max(-1, numero(p.premio)),          // può essere negativo (canone sotto il 4+4)
+    premio,                                           // fallback storico per il canone medio
     mesiMedio: Math.min(12, nonNegativo(p.mesiMedio)),
     aliq: nonNegativo(p.aliq),
     ota: quota(p.ota),
     gest: quota(p.gest),
     consumi: nonNegativo(p.consumi),   // consumi annui a piena occupazione
     condominio: nonNegativo(p.condominio),
-    manut: nonNegativo(p.manut),
+    manut,
+    manutConc: p.manutConc == null ? manut : nonNegativo(p.manutConc),
+    manutLib44: p.manutLib44 == null ? manut : nonNegativo(p.manutLib44),
+    manutMedio: p.manutMedio == null ? manut : nonNegativo(p.manutMedio),
+    manutBreve: p.manutBreve == null ? manut * 1.5 : nonNegativo(p.manutBreve),
     sfitto: quota(p.sfitto),
     unico: Boolean(p.unico),
     alta: Boolean(p.alta)
@@ -106,7 +127,7 @@ export function calcolaScenari(grezzi) {
   const breve = {
     k: 'breve', aliq: aliqB,
     ricavi: ricB,
-    costi: ricB * (p.ota + p.gest) + consumiB + p.condominio + p.manut * 1.5,
+    costi: ricB * (p.ota + p.gest) + consumiB + p.condominio + p.manutBreve,
     ced: ricB * aliqB,
     imu: imuPiena,
     notti: 365 * p.occ,
@@ -114,13 +135,13 @@ export function calcolaScenari(grezzi) {
   };
 
   // Medio termine (transitorio a canone libero): consumi scalati sui mesi abitati
-  const canM = p.canone * (1 + p.premio);
+  const canM = p.canoneMedio;
   const ricM = canM * p.mesiMedio;
   const consumiM = consumiEffettivi(p.consumi, p.mesiMedio / 12);
   const medio = {
     k: 'medio', aliq: FISCO.ced44,
     ricavi: ricM,
-    costi: ricM * 0.05 + consumiM + p.condominio + p.manut,
+    costi: ricM * 0.05 + consumiM + p.condominio + p.manutMedio,
     ced: ricM * FISCO.ced44,
     imu: imuPiena,
     canone: canM,
@@ -128,24 +149,24 @@ export function calcolaScenari(grezzi) {
   };
 
   // 4+4 canone libero
-  const ric4 = p.canone * 12 * (1 - p.sfitto);
+  const ric4 = p.canoneLib44 * 12 * (1 - p.sfitto);
   const lib44 = {
     k: 'lib44', aliq: FISCO.ced44,
     ricavi: ric4,
-    costi: p.condominio * 0.2 + p.manut,
+    costi: p.condominio * 0.2 + p.manutLib44,
     ced: ric4 * FISCO.ced44,
     imu: imuPiena,
-    canone: p.canone
+    canone: p.canoneLib44
   };
 
   // 3+2 concordato
-  const canC = p.canone * (1 - p.sconto);
+  const canC = p.canoneConc;
   const ricC = canC * 12 * (1 - p.sfitto / 2);
   const aliqC = p.alta ? FISCO.cedConc : FISCO.ced44;
   const conc = {
     k: 'conc', aliq: aliqC,
     ricavi: ricC,
-    costi: p.condominio * 0.2 + p.manut,
+    costi: p.condominio * 0.2 + p.manutConc,
     ced: ricC * aliqC,
     imu: imuConc,                                    // la riduzione IMU vale ovunque
     canone: canC
@@ -175,13 +196,45 @@ export function classifica(scenari) {
 export function breakEvenOcc(grezzi, obiettivo) {
   const p = normalizza(grezzi);
   const aliqB = p.unico ? FISCO.cedBreveUnico : FISCO.cedBrevePlu;
-  const fissi = CONSUMI.quotaFissa * p.consumi + p.condominio + p.manut * 1.5;
+  const fissi = CONSUMI.quotaFissa * p.consumi + p.condominio + p.manutBreve;
   const margine = p.adr * 365 * (1 - p.ota - p.gest - aliqB)
     - (1 - CONSUMI.quotaFissa) * p.consumi;
   if (margine <= 0) return null;
   const occ = (numero(obiettivo) + fissi + calcolaImu(p.rendcat, p.aliq)) / margine;
   // Oltre il 100% l'obiettivo è fisicamente irraggiungibile: è un "mai".
   return occ > 0 && occ <= 1 ? occ : null;
+}
+
+/**
+ * Lordo mensile minimo che porta uno scenario al netto obiettivo, lasciando
+ * invariati tutti gli altri parametri. Nel breve il lordo mensile viene
+ * tradotto nell'ADR necessario all'occupazione selezionata.
+ */
+export function trovaSogliaLordoMensile(grezzi, chiave, obiettivo) {
+  if (!['conc', 'lib44', 'medio', 'breve'].includes(chiave)) return null;
+  const base = normalizza(grezzi);
+  if (chiave === 'breve' && base.occ <= 0) return null;
+
+  const netto = lordo => {
+    const p = { ...grezzi };
+    if (chiave === 'breve') p.adr = nonNegativo(lordo) * 12 / (365 * base.occ);
+    else if (chiave === 'conc') p.canoneConc = nonNegativo(lordo);
+    else if (chiave === 'lib44') p.canoneLib44 = nonNegativo(lordo);
+    else p.canoneMedio = nonNegativo(lordo);
+    return calcolaScenari(p)[chiave].netto;
+  };
+
+  const target = numero(obiettivo);
+  if (netto(0) >= target) return 0;
+  let alto = 1000;
+  while (alto < 100000 && netto(alto) < target) alto *= 2;
+  if (netto(alto) < target) return null;
+  let basso = 0;
+  for (let i = 0; i < 60; i += 1) {
+    const medio = (basso + alto) / 2;
+    if (netto(medio) >= target) alto = medio; else basso = medio;
+  }
+  return alto;
 }
 
 /**
