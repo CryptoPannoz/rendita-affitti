@@ -16,7 +16,8 @@ ad alta tensione abitativa) esiste ma non è modellato: è spiegato nel metodo.
 
 👉 **Prova subito: [bebroggi.it/tools/rendita-affitti](https://bebroggi.it/tools/rendita-affitti/)** (IT/EN)
 
-Nessuna registrazione, nessun dato raccolto: i conti girano tutti nel browser.
+Nessuna registrazione: i conti girano tutti nel browser. Il dettaglio dei
+risultati si sblocca lasciando un'email (vedi «Il cancello dei risultati»).
 
 ## Cosa fa
 
@@ -58,6 +59,40 @@ npm test         # test del motore di calcolo (node --test, zero dipendenze)
 Nessuna dipendenza, nessun build: `index.html` (interfaccia bilingue),
 `logic.mjs` (il motore di calcolo, testato in `tests/`), due file di dati
 in `data/`.
+
+## Il cancello dei risultati (email + Firebase)
+
+I risultati non compaiono in tempo reale: si compilano immobile e canoni, si
+clicca **«Calcola il verdetto»** e il tool dice solo chi vince. Il dettaglio
+(netti, grafico, pareggio, sensibilità), il PDF e la condivisione si sbloccano
+lasciando un'email, salvata su **Cloud Firestore** (progetto `rendita-affitti`,
+regione `eur3`, collezione `rendita-leads`). L'SDK viene importato solo al
+momento dell'invio: fino ad allora la pagina non fa chiamate di rete.
+
+La chiave web nel sorgente non è un segreto: identifica il progetto, non
+autorizza nulla. A proteggere i dati sono le regole di Firestore — solo
+`create` con email valida, niente letture dal browser:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    match /rendita-leads/{doc} {
+      allow create: if request.resource.data.email is string
+        && request.resource.data.email.matches('.+@.+[.].+')
+        && request.resource.data.email.size() < 200
+        && request.resource.data.keys().hasOnly(['email', 'lingua', 'citta', 'vincitore', 'netto', 'creato']);
+    }
+  }
+}
+```
+
+Se il salvataggio fallisce (regole non pubblicate, rete assente), il visitatore
+viene sbloccato comunque: meglio perdere un lead che rompere lo strumento.
+Lo sblocco è ricordato in `localStorage` (`ra-email`).
 
 ## I dati
 

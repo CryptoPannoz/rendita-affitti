@@ -13,7 +13,7 @@ IMU, cedolare secca, tassi di occupazione e costi di gestione.
 - **Stack**: `index.html` (interfaccia, CSS e i18n inline) + **`logic.mjs`**
   (il motore di calcolo, modulo ES puro senza DOM, coperto dai test in
   `tests/`) + i dati in `data/`. Nessun framework, nessun build step, nessun
-  login, nessuna raccolta dati. **La matematica vive solo in `logic.mjs`**:
+  login. **La matematica vive solo in `logic.mjs`**:
   se tocchi il motore, `npm test` deve passare prima di committare, e se
   cambi una regola aggiorna anche il test che la fissa.
 - **Lingue**: italiano (sorgente, nell'HTML) e inglese, con interruttore in alto.
@@ -57,6 +57,24 @@ IMU, cedolare secca, tassi di occupazione e costi di gestione.
   riferimento (legge/articolo/comma) nel commento, verificato ad ago 2026.
   Se aggiorni un'aliquota, aggiorna il riferimento.
 
+## Il cancello dei risultati (deciso da Alberto il 20/08/2026)
+
+- **Tre fasi**: `compila` (risultati nascosti via `body.bloccato`, il verdetto
+  mostra il bottone «Calcola il verdetto») → `teaser` (solo «Vince X», form
+  email) → `sbloccato` (verdetto completo, card, grafico, KPI, sensibilità,
+  bottoni PDF e condivisione). Stato in `fase`, sblocco ricordato in
+  `localStorage['ra-email']`.
+- **Lead su Firestore**: progetto Firebase `rendita-affitti` (eur3), collezione
+  `rendita-leads`, campi `email, lingua, citta, vincitore, netto, creato`.
+  Le regole (nel README) permettono solo `create` con email valida; si leggono
+  dalla console. L'SDK (CDN gstatic 10.14.1) è importato **solo al submit**:
+  prima di allora nessuna chiamata di rete. Se `addDoc` fallisce si sblocca
+  comunque: il visitatore non paga per un backend rotto.
+- **PDF** = `window.print()` con il foglio `@media print` (solo risultati);
+  **Condividi** = `navigator.share` con fallback copia-link.
+- I testi del cancello stanno nel dizionario `GATE` (it/en), separato da `EN`
+  e `DYN`.
+
 ## Regole del progetto
 
 - **`data/` è generata o citata, mai inventata.** `omi-capoluoghi.js` viene
@@ -69,7 +87,9 @@ IMU, cedolare secca, tassi di occupazione e costi di gestione.
 - **Le stime sono dichiarate come stime.** Occupazione, ADR e sconto concordato
   precompilati sono punti di partenza modificabili, e la pagina lo dice. Non
   spacciare medie cittadine per previsioni sul singolo immobile.
-- **Niente chiamate di rete a runtime.** Tutto statico, i dati viaggiano col sito.
+- **Niente chiamate di rete a runtime**, con un'unica eccezione dichiarata:
+  l'SDK Firebase caricato al submit dell'email del cancello. Tutto il resto è
+  statico, i dati viaggiano col sito.
 - **Il tool non dà consigli d'investimento** e il disclaimer in pagina resta.
 
 ## Comandi

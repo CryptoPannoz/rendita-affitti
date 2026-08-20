@@ -183,6 +183,7 @@
     .consumi-total { flex: 0 0 auto; padding: 9px 12px; border-radius: 12px; background: var(--ink); color: white; text-align: right; }
     .consumi-total span { display: block; color: rgba(255,255,255,.65); font-family: var(--mono); font-size: .52rem; text-transform: uppercase; letter-spacing: .06em; }
     .consumi-total output { display: block; margin-top: 2px; color: var(--lime); font-family: var(--mono); font-size: .9rem; }
+    .consumi-total output.mese { color: rgba(255,255,255,.78); font-size: .66rem; margin-top: 1px; }
     .consumi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
     .consumo-cell { min-width: 0; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--white); }
     .consumo-cell > label { display: block; margin-bottom: 7px; font-size: .64rem; font-weight: 650; }
@@ -303,6 +304,37 @@
     .warnbox { display: flex; gap: 10px; padding: 13px 16px; border-radius: 14px; background: #fff1ec; border: 1px solid rgba(255,91,53,.35); color: #8c3418; font-size: .76rem; line-height: 1.5; }
     .warnbox b { color: #6f2a12; }
 
+    /* ── Cancello dei risultati: compila → calcola → email → dettagli ── */
+    body.bloccato .scen .hero, body.bloccato .scen table, body.bloccato .scen .ctx,
+    body.bloccato .gross-scale, body.bloccato .gross-note,
+    body.bloccato #card-chart, body.bloccato #kpis, body.bloccato #card-sens { display: none; }
+    .verdict .cta-btn { margin-top: 18px; display: inline-flex; align-items: center; gap: 10px; padding: 14px 26px; border: 0; border-radius: 999px; background: var(--lime); color: var(--ink); font-weight: 650; font-size: .95rem; letter-spacing: -.02em; cursor: pointer; }
+    .verdict .cta-btn:hover { filter: brightness(.94); }
+    .verdict .cta-btn:disabled { opacity: .6; cursor: wait; }
+    .gate-form { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .gate-form input[type="email"] { flex: 1 1 240px; min-height: 48px; padding: 0 16px; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; background: rgba(255,255,255,.08); color: white; font-family: var(--mono); font-size: .85rem; }
+    .gate-form input[type="email"]::placeholder { color: rgba(255,255,255,.4); }
+    .gate-form input[type="email"]:focus { outline: 2px solid var(--lime); }
+    .gate-form .cta-btn { margin-top: 0; }
+    .gate-err { margin: 8px 0 0; color: #ffb4a0; font-family: var(--mono); font-size: .66rem; }
+    .gate-priv { margin: 12px 0 0; max-width: 62ch; color: rgba(255,255,255,.55); font-size: .62rem; line-height: 1.55; }
+    .verdict .share-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .share-row button { min-height: 44px; padding: 0 18px; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; background: transparent; color: white; font-size: .78rem; font-weight: 650; cursor: pointer; }
+    .share-row button:hover { background: white; color: var(--ink); border-color: white; }
+
+    /* Stampa: solo i risultati, per il "Scarica il PDF" */
+    @media print {
+      .tool-top, .tool-hero, .casa, .scen .params, .warnbox, details.deep, footer,
+      .verdict .share-row, .gate-form, .gate-err, .gate-priv { display: none !important; }
+      body { background: white; }
+      .card, .scen { border-color: #bbb; box-shadow: none !important; break-inside: avoid; }
+      .verdict { background: white; color: black; border: 1px solid #bbb; }
+      .verdict small, .verdict p { color: #333; }
+      .verdict strong em { color: black; }
+      .scen.win .hero { background: #eee; }
+      .scen.win .hero b, .scen.win .hero u, .scen.win .hero i { color: black; }
+    }
+
     details.deep { padding: 0; }
     details.deep > summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 24px; cursor: pointer; list-style: none; }
     details.deep > summary::-webkit-details-marker { display: none; }
@@ -349,7 +381,7 @@
         3+2 concordato, 4+4 a canone libero, medio termine o affitto breve turistico:
         il confronto giusto non è sul canone lordo, è sul <strong>netto che ti resta</strong>
         dopo occupazione reale, costi di gestione, cedolare secca e IMU.
-        Descrivi l'immobile, poi muovi i canoni dentro ogni box e guarda i netti cambiare.
+        Descrivi l'immobile, regola i canoni dentro ogni box e poi calcola il verdetto.
       </p>
       <div class="hero-promise" id="promise"></div>
     </div>
@@ -423,7 +455,7 @@
               <h3 data-i18n="cons.h3">Calcolatore consumi inclusi</h3>
               <p data-i18n-html="cons.p">Costruisci il costo annuo da quantità e tariffe reali: <b>kWh × €/kWh</b> per la luce, <b>Smc × €/Smc</b> per il gas, più acqua e Wi-Fi. Il totale incide solo su medio e breve e viene poi scalato sulla presenza.</p>
             </div>
-            <div class="consumi-total"><span data-i18n="cons.total">totale a piena occupazione</span><output id="o-consumi"></output></div>
+            <div class="consumi-total"><span data-i18n="cons.total">totale a piena occupazione</span><output id="o-consumi"></output><output class="mese" id="o-consumi-mese"></output></div>
           </div>
           <input type="hidden" id="consumi" value="1500" />
           <div class="consumi-grid">
@@ -627,7 +659,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" id="card-chart">
           <h3 data-i18n="chart.h3">Il netto annuo, a colpo d'occhio</h3>
           <p class="note" data-i18n="chart.note">Dopo costi di gestione, cedolare secca e IMU. Prima di eventuali rate del mutuo.</p>
           <div class="chart-wrap" id="chart"></div>
@@ -635,7 +667,7 @@
 
         <div class="kpis" id="kpis"></div>
 
-        <div class="card">
+        <div class="card" id="card-sens">
           <h3 data-i18n="sens.h3">E se l'occupazione fosse diversa?</h3>
           <p class="note" data-i18n="sens.note">Il netto dell'affitto breve alle varie occupazioni, contro il migliore dei contratti lunghi. La riga evidenziata è il tuo valore attuale.</p>
           <div class="tscroll">
@@ -649,7 +681,8 @@
             <b>Questo è un confronto economico, non una previsione.</b> Le medie cittadine di occupazione e prezzo
             non valgono per il singolo immobile; regole fiscali e regolamenti locali cambiano (CIN, limiti comunali agli
             affitti brevi, aliquote IMU deliberate ogni anno). Prima di firmare qualsiasi contratto verifica i numeri
-            con il tuo commercialista. Qui non si raccolgono dati: i conti girano tutti nel tuo browser.
+            con il tuo commercialista. I conti girano tutti nel tuo browser; l'email è richiesta solo per
+            sbloccare il dettaglio dei risultati.
           </p>
         </div>
 
@@ -685,7 +718,7 @@
             <h4>Il calcolatore considera il mutuo?</h4>
             <p>No, di proposito: la rata è identica in tutti e quattro gli scenari, quindi non cambia il confronto — cambia solo quanto del netto ti resta in tasca. Se l'immobile è a leva, sottrai la tua rata annua dal netto di ogni colonna.</p>
             <h4>Chi c'è dietro questo strumento?</h4>
-            <p>Lo stesso approccio del <a href="https://bebroggi.it/tools/affitto-vs-acquisto.html" style="text-decoration:underline">calcolatore comprare-o-affittare</a>: strumenti gratuiti, open source, senza raccolta dati, con tutte le ipotesi dichiarate. Il codice è su <a href="https://github.com/CryptoPannoz/rendita-affitti" rel="noopener" style="text-decoration:underline">GitHub</a>: puoi verificarlo, clonarlo e adattarlo.</p>
+            <p>Lo stesso approccio del <a href="https://bebroggi.it/tools/affitto-vs-acquisto.html" style="text-decoration:underline">calcolatore comprare-o-affittare</a>: strumenti gratuiti, open source, con tutte le ipotesi dichiarate. Il codice è su <a href="https://github.com/CryptoPannoz/rendita-affitti" rel="noopener" style="text-decoration:underline">GitHub</a>: puoi verificarlo, clonarlo e adattarlo.</p>
           </div>
         </details>
 
@@ -699,7 +732,7 @@
       <a href="https://github.com/CryptoPannoz/rendita-affitti" rel="noopener" data-i18n="foot.src">Codice sorgente (MIT)</a>
       <a href="https://bebroggi.it/tools/affitto-vs-acquisto.html" data-i18n="foot.ava">Comprare o affittare casa?</a>
       <a href="https://bebroggi.it/tools/holiday-radar/">Holiday Radar</a>
-      <span data-i18n="foot.nodata">Nessun cookie di profilazione, nessun dato raccolto.</span>
+      <span data-i18n="foot.nodata">Nessun cookie di profilazione; email raccolta solo per sbloccare i risultati.</span>
     </div>
   </footer>
 
@@ -719,7 +752,7 @@
     'top.home': '← bebroggi.it',
     'top.gh': 'Open source on GitHub ↗',
     'hero.h1': 'How much does your property <em>really</em> earn?',
-    'hero.lead': 'Controlled-rent 3+2, open-market 4+4, mid-term lets or short-term tourist rental: the fair comparison is not the gross rent, it is the <strong>net you actually keep</strong> after real occupancy, running costs, the flat tax (cedolare secca) and IMU property tax. Describe the property, then move the rents inside each box and watch the nets change.',
+    'hero.lead': 'Controlled-rent 3+2, open-market 4+4, mid-term lets or short-term tourist rental: the fair comparison is not the gross rent, it is the <strong>net you actually keep</strong> after real occupancy, running costs, the flat tax (cedolare secca) and IMU property tax. Describe the property, set the rents inside each box, then compute the verdict.',
     'casa.h2': 'The property',
     'casa.hint': 'The common base: it applies to all four scenarios below.',
     'omi.citta': 'City', 'omi.mq': 'Square metres',
@@ -785,15 +818,15 @@
     'chart.note': 'After running costs, flat tax and IMU. Before any mortgage payments.',
     'sens.h3': 'What if occupancy were different?',
     'sens.note': 'Short-term net at various occupancy levels, against the best long lease. The highlighted row is your current value.',
-    'warn': '<b>This is an economic comparison, not a forecast.</b> City averages for occupancy and rates don’t apply to a single property; tax rules and local regulations change (CIN registration, municipal caps on short lets, IMU rates set every year). Before signing anything, check the numbers with your accountant. Nothing is collected here: everything runs in your browser.',
+    'warn': '<b>This is an economic comparison, not a forecast.</b> City averages for occupancy and rates don’t apply to a single property; tax rules and local regulations change (CIN registration, municipal caps on short lets, IMU rates set every year). Before signing anything, check the numbers with your accountant. Everything runs in your browser; your email is only requested to unlock the detailed results.',
     'met.h3': 'How it computes (the method, all declared)',
     'deep.open': 'open', 'deep.open2': 'open',
     'met.list': '<li><b>3+2 controlled rent:</b> rent entered from the territorial agreement (zone and band tables, not free choice), vacancy halved thanks to broader demand. Flat tax <b>10%</b> in high-demand municipalities or under a declared calamity emergency (21% elsewhere) and IMU at <b>75%</b> everywhere. Its maintenance estimate is independent, plus the one-off compliance certificate (~€80–200, ignored here).</li><li><b>4+4 open-market lease:</b> market rent × 12, minus vacancy/risk. Utilities in the tenant’s name, 20% of building charges (extraordinary), its own maintenance estimate. Flat tax 21%. Full IMU.</li><li><b>Mid-term (transitional lease):</b> adjustable monthly rent for the months actually let. Furnished, <b>utilities included</b> and building charges on you, its own maintenance estimate, light management (5% for tenant changeovers). Flat tax 21%; it drops to 10% only with a controlled-rent transitional contract (rent from the official tables, not market) in a high-demand municipality — a variant not modelled here. Full IMU.</li><li><b>Short-term rental:</b> revenue = nightly rate × 365 × occupancy. Costs: OTA commissions, running costs as % of revenue, utilities (included), full building charges and the higher maintenance estimate shown in its card. Flat tax of 26% — or 21% for one property of your choice — on gross revenue: with the flat tax <b>no cost is deductible</b>. The platforms’ 21% withholding is an advance, not an extra tax. Flat-fee cleaning charged to guests would in any case be taxable under the flat tax (AdE Circular 24/E/2017): it stays outside revenue here for simplicity, with the nightly rate “cleaning excluded”. Full IMU. From 2026 at most two short-let apartments: from the third, business regime (outside this calculator’s scope).</li><li><b>Utilities:</b> the full-occupancy total comes from every visible line in the calculator — kWh × tariff for electricity, Smc × tariff for gas, water, Wi-Fi and other costs. The pre-fill uses €600 of standing costs + €450 per occupant only as an order of magnitude; every quantity and tariff is editable. The total is then scaled to actual presence: utilities = full × (30% + 70% × presence). In short-term, presence is occupancy; in mid-term, months let over 12; on long leases utilities are the tenant’s.</li><li><b>Seasonality:</b> the monthly curve under the occupancy slider is your region’s profile of nights in platform accommodation (Eurostat), rescaled to your average occupancy. It shows when the income concentrates; it does not change the annual total.</li><li><b>IMU:</b> cadastral income × 1.05 × 160 × rate. The pre-filled cadastral income is a rough estimate (≈ taxable base equal to half the market value): entering the real one changes the result. Your city’s rate is in the municipal resolution on the MEF Finance Department portal.</li><li><b>Pre-filled occupancy:</b> the average of two public metrics — calendar occupancy (AirROI: nights sold over 365, part-time listings included) and available-nights occupancy (Airbnb data: excludes host-blocked days). The first understates a dedicated full-year listing, the second slightly overstates it: the average is a starting point, not a forecast.</li><li><b>What’s left out:</b> any mortgage (identical across scenarios), your time, tourist tax (paid by guests), furniture depreciation, ordinary income tax as an alternative to the flat tax (rarely convenient if you have other income), the business regime beyond 2 short-let flats.</li>',
     'faq.h3': 'The questions everyone asks',
-    'faq.body': '<h4>Short-term rental or a 4+4 lease?</h4><p>It almost all comes down to occupancy and running costs. Short lets earn more per night, but pay commissions, cleaning, utilities and — from the second property — a 26% flat tax. Below a certain occupancy, often between 30% and 55%, the long lease nets more with far less work. Check the break-even point above: it is the most important number on this page.</p><h4>Why can the controlled 3+2 beat the open-market lease?</h4><p>Because the rent discount is often more than offset by taxes: a 10% flat tax instead of 21%, and IMU at 75%. With 15–25% discounts the two leases net about the same in many cities; where IMU sits at the maximum, the 3+2 often wins. You also let faster, with less churn.</p><h4>Is mid-term the perfect compromise?</h4><p>It is an interesting balance: high occupancy, no tourist-platform commissions, guests staying for months. But as a rule the rent is close to the 4+4, the flat must be furnished and the bills stay with you: the real advantage is flexibility (you get the flat back when you need it), not the net. A controlled-rent transitional contract in a high-demand municipality gets the 10% flat tax, but the rent must follow the official tables.</p><h4>What if the pre-filled occupancy is unrealistic for my place?</h4><p>It is a city average, not a forecast: a single listing can sit far above or below it, depending on location, quality, price and reviews. Move the slider and explore the sensitivity table: if the verdict flips with 5 points less occupancy, you are in the risk zone.</p><h4>Does the calculator account for a mortgage?</h4><p>No, on purpose: the payment is identical in all four scenarios, so it doesn’t change the comparison — only how much of the net ends up in your pocket. If the property is leveraged, subtract your annual payments from every column.</p><h4>Who is behind this tool?</h4><p>The same approach as the <a href="https://bebroggi.it/tools/affitto-vs-acquisto.html" style="text-decoration:underline">rent-or-buy calculator</a>: free, open-source tools, no data collection, every assumption declared. The code is on <a href="https://github.com/CryptoPannoz/rendita-affitti" rel="noopener" style="text-decoration:underline">GitHub</a>: check it, clone it, adapt it.</p>',
+    'faq.body': '<h4>Short-term rental or a 4+4 lease?</h4><p>It almost all comes down to occupancy and running costs. Short lets earn more per night, but pay commissions, cleaning, utilities and — from the second property — a 26% flat tax. Below a certain occupancy, often between 30% and 55%, the long lease nets more with far less work. Check the break-even point above: it is the most important number on this page.</p><h4>Why can the controlled 3+2 beat the open-market lease?</h4><p>Because the rent discount is often more than offset by taxes: a 10% flat tax instead of 21%, and IMU at 75%. With 15–25% discounts the two leases net about the same in many cities; where IMU sits at the maximum, the 3+2 often wins. You also let faster, with less churn.</p><h4>Is mid-term the perfect compromise?</h4><p>It is an interesting balance: high occupancy, no tourist-platform commissions, guests staying for months. But as a rule the rent is close to the 4+4, the flat must be furnished and the bills stay with you: the real advantage is flexibility (you get the flat back when you need it), not the net. A controlled-rent transitional contract in a high-demand municipality gets the 10% flat tax, but the rent must follow the official tables.</p><h4>What if the pre-filled occupancy is unrealistic for my place?</h4><p>It is a city average, not a forecast: a single listing can sit far above or below it, depending on location, quality, price and reviews. Move the slider and explore the sensitivity table: if the verdict flips with 5 points less occupancy, you are in the risk zone.</p><h4>Does the calculator account for a mortgage?</h4><p>No, on purpose: the payment is identical in all four scenarios, so it doesn’t change the comparison — only how much of the net ends up in your pocket. If the property is leveraged, subtract your annual payments from every column.</p><h4>Who is behind this tool?</h4><p>The same approach as the <a href="https://bebroggi.it/tools/affitto-vs-acquisto.html" style="text-decoration:underline">rent-or-buy calculator</a>: free, open-source tools, every assumption declared. The code is on <a href="https://github.com/CryptoPannoz/rendita-affitti" rel="noopener" style="text-decoration:underline">GitHub</a>: check it, clone it, adapt it.</p>',
     'foot.src': 'Source code (MIT)',
     'foot.ava': 'Rent or buy a home?',
-    'foot.nodata': 'No profiling cookies, no data collected.'
+    'foot.nodata': 'No profiling cookies; email collected only to unlock the results.'
   };
 
   /* Stringhe dinamiche (generate a ogni render) per entrambe le lingue. */
@@ -806,7 +839,7 @@
         lib44: a => `canone di mercato · cedolare ${a}%`,
         conc: a => `canone da tabelle · cedolare ${a}% · IMU −25%`
       },
-      promise: ['gratuito', 'open source', 'nessuna registrazione', 'nessun dato raccolto', 'dati OMI · Agenzia Entrate', 'stagionalità Eurostat'],
+      promise: ['gratuito', 'open source', 'nessuna registrazione', 'conti nel tuo browser', 'dati OMI · Agenzia Entrate', 'stagionalità Eurostat'],
       alMese: m => `${m}/mese`, sulValore: y => `${y} sul valore`,
       ced: a => `Cedolare ${a}%`,
       soglia: (x, nome, sopra) => `Sopra <b>${x}/mese</b> questo scenario batte ${nome.toLowerCase()}; sotto la linea conviene ${nome.toLowerCase()}. Ora sei <b>${sopra ? 'sopra' : 'sotto'}</b> soglia.`,
@@ -851,7 +884,7 @@
         lib44: a => `market rent · ${a}% flat tax`,
         conc: a => `table rent · ${a}% flat tax · IMU −25%`
       },
-      promise: ['free', 'open source', 'no sign-up', 'no data collected', 'OMI data · Italian Revenue Agency', 'Eurostat seasonality'],
+      promise: ['free', 'open source', 'no sign-up', 'runs in your browser', 'OMI data · Italian Revenue Agency', 'Eurostat seasonality'],
       alMese: m => `${m}/month`, sulValore: y => `${y} on value`,
       ced: a => `Flat tax ${a}%`,
       soglia: (x, nome, sopra) => `Above <b>${x}/month</b> this scenario beats ${nome.toLowerCase()}; below the line ${nome.toLowerCase()} pays more. You are currently <b>${sopra ? 'above' : 'below'}</b> the threshold.`,
@@ -887,6 +920,38 @@
       kpi3iAltro: nome => `${nome} means one tenant and little management: the top of the ranking is also the most comfortable.`,
       sensHead: (nome, netto) => `<th>Occupancy</th><th>Nights</th><th>Short-term net</th><th>vs ${nome} (${netto})</th>`,
       fonti: (fonti, anno) => `Data sources: ${fonti}. Tax parameters: year ${anno}.`
+    }
+  };
+
+  /* ─── Cancello dei risultati: i testi delle tre fasi ─── */
+  const GATE = {
+    it: {
+      small: 'Quattro scenari, un vincitore',
+      titolo: 'Chi vince con i tuoi numeri?',
+      testo: 'Descrivi l’immobile e regola i canoni dei quattro scenari qui sopra, poi calcola: il confronto è sul netto che resta dopo costi, cedolare e IMU.',
+      btn: 'Calcola il verdetto →',
+      tTitolo: nome => `Vince <em>${nome.toLowerCase()}</em>`,
+      tTesto: 'Il confronto completo è pronto: netto annuo e mensile dei quattro scenari, punto di pareggio, grafico e tabella di sensibilità. Lascia l’email per sbloccare il dettaglio, scaricare il PDF e condividere la pagina.',
+      ph: 'la-tua@email.it',
+      sblocca: 'Sblocca i dettagli',
+      attendi: 'Un attimo…',
+      errEmail: 'Controlla l’indirizzo email: non sembra valido.',
+      priv: 'L’email serve solo per ricontattarti su questo strumento: niente spam, nessuna cessione a terzi. Scrivi a bebroggi@gmail.com per farla cancellare.',
+      pdf: 'Scarica il PDF', condividi: 'Condividi la pagina', copiato: 'Link copiato ✓'
+    },
+    en: {
+      small: 'Four scenarios, one winner',
+      titolo: 'Who wins with your numbers?',
+      testo: 'Describe the property and set the rents in the four scenario boxes above, then compute: the comparison is on the net you keep after costs, flat tax and IMU.',
+      btn: 'Compute the verdict →',
+      tTitolo: nome => `<em>${nome}</em> wins`,
+      tTesto: 'The full comparison is ready: yearly and monthly net for all four scenarios, break-even point, chart and sensitivity table. Leave your email to unlock the details, download the PDF and share the page.',
+      ph: 'your@email.com',
+      sblocca: 'Unlock the details',
+      attendi: 'One moment…',
+      errEmail: 'Check the email address: it does not look valid.',
+      priv: 'Your email is used only to follow up about this tool: no spam, never shared with third parties. Write to bebroggi@gmail.com to have it deleted.',
+      pdf: 'Download the PDF', condividi: 'Share the page', copiato: 'Link copied ✓'
     }
   };
 
@@ -966,6 +1031,7 @@
     $('tot-gas').textContent = eur(c.gas);
     $('tot-internet').textContent = eur(c.internet);
     $('o-consumi').value = eur(c.totale) + (lang === 'en' ? '/yr' : '/anno');
+    $('o-consumi-mese').value = eur(c.totale / 12) + (lang === 'en' ? '/month' : '/mese');
     return c;
   }
 
@@ -1110,19 +1176,46 @@
     $('o-occup').value = $('occup').value;
     $('o-sfitto').value = pct1(p.sfitto);
 
-    // Verdetto
+    // Verdetto: cosa mostra dipende dalla fase del cancello
     const delta = best.netto - secondo.netto;
     const c = cittaCorrente();
-    $('verdict').innerHTML = `
-      <small>${t.vSmall(c && c.n, FISCO.anno)}</small>
-      <strong>${t.vTitolo(best.nome, eur(best.netto))}</strong>
-      <p>${t.vTesto(eur(best.netto / 12), pct1(best.rendimento), secondo.nome, eur(secondo.netto), eur(delta), delta < 1200)}</p>`;
+    const G = GATE[lang];
+    if (fase === 'compila') {
+      $('verdict').innerHTML = `
+        <small>${G.small}</small>
+        <strong>${G.titolo}</strong>
+        <p>${G.testo}</p>
+        <button type="button" class="cta-btn" id="btn-calcola">${G.btn}</button>`;
+    } else if (fase === 'teaser') {
+      // Rigenerare il form non deve buttare via l'email già digitata.
+      const emailDigitata = $('gate-email') ? $('gate-email').value : '';
+      $('verdict').innerHTML = `
+        <small>${t.vSmall(c && c.n, FISCO.anno)}</small>
+        <strong>${G.tTitolo(best.nome)}</strong>
+        <p>${G.tTesto}</p>
+        <form class="gate-form" id="gate-form" novalidate>
+          <input type="email" id="gate-email" autocomplete="email" placeholder="${G.ph}" aria-label="Email" />
+          <button type="submit" class="cta-btn" id="btn-sblocca">${G.sblocca}</button>
+        </form>
+        <p class="gate-err" id="gate-err" hidden></p>
+        <p class="gate-priv">${G.priv}</p>`;
+      if (emailDigitata) $('gate-email').value = emailDigitata;
+    } else {
+      $('verdict').innerHTML = `
+        <small>${t.vSmall(c && c.n, FISCO.anno)}</small>
+        <strong>${t.vTitolo(best.nome, eur(best.netto))}</strong>
+        <p>${t.vTesto(eur(best.netto / 12), pct1(best.rendimento), secondo.nome, eur(secondo.netto), eur(delta), delta < 1200)}</p>
+        <div class="share-row">
+          <button type="button" id="btn-pdf">${G.pdf}</button>
+          <button type="button" id="btn-share">${G.condividi}</button>
+        </div>`;
+    }
 
     // Card: numeri e testi dinamici dentro la struttura statica
     for (const k of ORDINE) {
       const s = S[k];
       const card = $('scen-' + k);
-      card.classList.toggle('win', s === best);
+      card.classList.toggle('win', fase === 'sbloccato' && s === best);
       $('sub-' + k).textContent = t.sub[k](Math.round(s.aliq * 100));
       const out = sel => card.querySelector(`[data-out="${sel}"]`);
       out('netto').textContent = eur(s.netto);
@@ -1225,6 +1318,93 @@
   }));
   $('anno-f').textContent = new Date().getFullYear();
 
+  /* ─── Cancello: compila → verdetto → email → dettagli ───
+     I risultati restano nascosti finché non si clicca «Calcola»; il verdetto
+     mostra solo il vincitore, l'email sblocca dettaglio, PDF e condivisione.
+     Il lead finisce su Firestore (progetto `rendita-affitti`): la chiave web
+     non è un segreto, i dati sono protetti dalle regole (solo `create`). */
+  const FIREBASE_CONFIG = {
+    apiKey: 'AIzaSyC-sTKfut6O0jyz7PbrgGoavW3E-yloqzE',
+    authDomain: 'rendita-affitti.firebaseapp.com',
+    projectId: 'rendita-affitti',
+    appId: '1:612899040029:web:64b02f9d0f3ae36faecff4'
+  };
+  const LEADS = 'rendita-leads';
+
+  let fase = 'compila';
+  try { if (localStorage.getItem('ra-email')) fase = 'sbloccato'; } catch (e) { /* niente storage */ }
+  function setFase(f) {
+    fase = f;
+    document.body.classList.toggle('bloccato', f !== 'sbloccato');
+  }
+
+  async function salvaLead(email) {
+    /* SDK caricato solo qui: la pagina resta statica finché non serve. */
+    const [{ initializeApp, getApps }, { getFirestore, collection, addDoc, serverTimestamp }] = await Promise.all([
+      import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js')
+    ]);
+    const app = getApps().length ? getApps()[0] : initializeApp(FIREBASE_CONFIG);
+    const S = calcolaScenari(leggi());
+    const best = classifica(S)[0];
+    const c = cittaCorrente();
+    await addDoc(collection(getFirestore(app), LEADS), {
+      email,
+      lingua: lang,
+      citta: c ? c.n : '',
+      vincitore: best.k,
+      netto: Math.round(best.netto),
+      creato: serverTimestamp()
+    });
+  }
+
+  async function sbloccaConEmail() {
+    const G = GATE[lang];
+    const email = ($('gate-email').value || '').trim();
+    const err = $('gate-err');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = G.errEmail; err.hidden = false; return; }
+    err.hidden = true;
+    const btn = $('btn-sblocca');
+    btn.disabled = true; btn.textContent = G.attendi;
+    try { await salvaLead(email); }
+    catch (e) { console.error('Lead non salvato:', e); /* il visitatore non paga per un backend rotto */ }
+    try { localStorage.setItem('ra-email', email); } catch (e) { /* niente storage */ }
+    setFase('sbloccato');
+    render();
+    $('verdict').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  async function condividi(btn) {
+    const G = GATE[lang];
+    const url = 'https://bebroggi.it/tools/rendita-affitti/';
+    if (navigator.share) {
+      try { await navigator.share({ title: document.title, url }); } catch (e) { /* annullato */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      btn.textContent = G.copiato;
+      setTimeout(() => { btn.textContent = G.condividi; }, 2000);
+    } catch (e) { /* niente clipboard */ }
+  }
+
+  /* Il verdetto viene rigenerato a ogni render: listener delegati, una volta sola. */
+  $('verdict').addEventListener('click', e => {
+    if (e.target.closest('#btn-calcola')) {
+      setFase('teaser');
+      render();
+      $('verdict').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      $('gate-email') && $('gate-email').focus();
+    } else if (e.target.closest('#btn-pdf')) {
+      window.print();
+    } else if (e.target.closest('#btn-share')) {
+      condividi(e.target.closest('#btn-share'));
+    }
+  });
+  $('verdict').addEventListener('submit', e => {
+    if (e.target.id === 'gate-form') { e.preventDefault(); sbloccaConEmail(); }
+  });
+
   /* Lingua iniziale: ?lang → localStorage → italiano. */
   const urlLang = new URLSearchParams(location.search).get('lang');
   let startLang = 'it';
@@ -1234,6 +1414,7 @@
   /* Trieste come default: casa. */
   const idxTS = OMI.findIndex(x => x.n === 'Trieste');
   if (idxTS >= 0) sel.value = idxTS;
+  setFase(fase);
   setStatic(startLang);
   prefill();
   </script>
