@@ -16,17 +16,21 @@ import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = resolve(ROOT, '..', 'alberto-broggi-site');
+const SITE_CANDIDATES = [
+  process.env.RENDITA_SITE_DIR && resolve(process.env.RENDITA_SITE_DIR),
+  resolve(ROOT, '..', 'alberto-broggi-site'),
+  resolve(ROOT, '..', 'site-source')
+].filter(Boolean);
+const SITE = SITE_CANDIDATES.find(path => existsSync(path));
+if (!SITE) {
+  console.error(`Non trovo il sito. Percorsi provati:\n- ${SITE_CANDIDATES.join('\n- ')}`);
+  console.error('Clona CryptoPannoz/alberto-broggi-site accanto a questa cartella o imposta RENDITA_SITE_DIR.');
+  process.exit(1);
+}
 const TARGET = join(SITE, 'tools', 'rendita-affitti');
 
 /** Quello che serve al browser, più gli script per rigenerare i dati. */
 const PAYLOAD = ['index.html', 'logic.mjs', 'data', 'scripts', 'tests', 'package.json', 'README.md', 'LICENSE'];
-
-if (!existsSync(SITE)) {
-  console.error(`Non trovo il sito in ${SITE}.`);
-  console.error('Clona CryptoPannoz/alberto-broggi-site accanto a questa cartella.');
-  process.exit(1);
-}
 
 // Si azzera la destinazione: se un file sparisce qui, deve sparire anche là.
 await rm(TARGET, { recursive: true, force: true });
