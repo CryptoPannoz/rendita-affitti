@@ -121,9 +121,19 @@ test('concordato fuori dai comuni ad alta tensione: cedolare 21%, IMU comunque a
   const fuori = calcolaScenari({ ...trieste, alta: false });
   assert.equal(fuori.conc.aliq, FISCO.ced44);
   vicino(fuori.conc.imu, 730.128 * 0.75);
-  // Il medio termine resta al 21% in ogni caso: il 10% richiederebbe il canone da tabelle.
+  // Il medio termine resta al 21% senza il toggle del concordato, anche in comune ad alta tensione.
   assert.equal(fuori.medio.aliq, FISCO.ced44);
   assert.equal(calcolaScenari(trieste).medio.aliq, FISCO.ced44);
+});
+
+test('transitorio concordato in comune agevolato: cedolare 10% col toggle medioConc', () => {
+  const s = calcolaScenari({ ...trieste, medioConc: true });
+  assert.equal(s.medio.aliq, FISCO.cedConc);
+  vicino(s.medio.ced, s.medio.ricavi * FISCO.cedConc);
+  // Il toggle del medio non tocca gli altri scenari.
+  const base = calcolaScenari(trieste);
+  assert.equal(s.conc.aliq, base.conc.aliq);
+  vicino(s.lib44.netto, base.lib44.netto);
 });
 
 test('consumi e condominio: inclusi nel breve e nel medio, all\'inquilino nei contratti lunghi', () => {

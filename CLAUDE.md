@@ -36,9 +36,16 @@ IMU, cedolare secca, tassi di occupazione e costi di gestione.
 ## Il modello economico (regole decise da Alberto, non toccarle senza chiedere)
 
 - **Medio termine (transitorio)**: di norma canone = canone 4+4 (slider parte da 0),
-  con **consumi inclusi** a carico del proprietario. Cedolare **21%**: il 10%
-  esiste solo per il transitorio a canone concordato (canone da tabelle) in
-  comune ATA, e non è modellato — è spiegato nel metodo.
+  con **consumi inclusi** a carico del proprietario. Cedolare **21%**, o **10%**
+  col toggle «Concordato in comune agevolato?» (transitorio a canone concordato
+  con attestazione — Circ. AdE 8/E/2017 §1.1). Nei comuni **>10.000 abitanti**
+  il canone del transitorio deve comunque stare nelle fasce degli accordi
+  territoriali (DM 16/1/2017 art. 2): niente riferimenti a «transitori in
+  catena» nei testi — i rinnovi senza esigenza documentata vengono ricondotti
+  a 4+4 (art. 2 c. 6). Correzioni suggerite da E. Romey (Confabitare), ago 2026.
+- **Contratti per studenti (6–36 mesi)**: non modellati come scenario a parte,
+  sono inglobati nel 3+2 concordato (stessa disciplina fiscale) e citati nel
+  metodo e nelle FAQ.
 - **Affitto breve**: **consumi inclusi** (utenze a carico host), condominio pieno,
   manutenzione +50%.
 - **4+4 e 3+2**: utenze intestate all'inquilino, condominio al 20% (straordinaria).

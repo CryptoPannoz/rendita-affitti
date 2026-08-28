@@ -8,9 +8,11 @@
  * - Affitto breve: consumi inclusi (a carico host), condominio pieno,
  *   manutenzione specifica più alta, cedolare 26% (21% per un solo immobile a scelta).
  * - Medio termine (transitorio): di norma canone = 4+4 (il "premio" parte
- *   da zero), consumi inclusi, condominio pieno, gestione 5%, cedolare 21%.
- *   Canone e manutenzione sono regolabili nello scenario. Il 10% del
- *   transitorio concordato richiede il canone da tabelle e non è modellato.
+ *   da zero), consumi inclusi, condominio pieno, gestione 5%. Cedolare 21%
+ *   a canone libero (ammesso solo nei comuni fino a 10.000 abitanti:
+ *   DM 16/1/2017 art. 2), oppure 10% col flag `medioConc` — transitorio a
+ *   canone concordato con attestazione in comune agevolato (Circ. AdE
+ *   8/E/2017 §1.1). Canone e manutenzione sono regolabili nello scenario.
  * - 4+4: utenze all'inquilino, condominio al 20% (straordinaria), sfitto
  *   pieno, cedolare 21%.
  * - 3+2 concordato: canone scontato, sfitto dimezzato, cedolare 10% solo
@@ -26,7 +28,7 @@ export const FISCO = Object.freeze({
   cedBreveUnico: 0.21,   // brevi, 1 immobile a scelta in dichiarazione — art. 4 c. 2 D.L. 50/2017 mod. L. 213/2023 art. 1 c. 63; Circ. AdE 10/E/2024
   cedBrevePlu: 0.26,     // brevi, aliquota ordinaria (2° immobile) — L. 213/2023 art. 1 c. 63; tetto 2 appartamenti e presunzione d'impresa dal 3°: L. 199/2025 art. 1 c. 17
   ced44: 0.21,           // canone libero (4+4 e transitorio) — D.Lgs. 23/2011 art. 3 c. 2
-  cedConc: 0.10,         // concordato in comuni ATA (Del. CIPE 87/03) o calamitati (D.L. 47/2014 art. 9 c. 1 e 2-bis) — strutturale dal 2020: L. 160/2019 art. 1 c. 6; altrove 21%
+  cedConc: 0.10,         // concordato in comuni ATA (Del. CIPE 87/03) o calamitati (D.L. 47/2014 art. 9 c. 1 e 2-bis) — strutturale dal 2020: L. 160/2019 art. 1 c. 6; altrove 21%. Vale anche per transitori e studenti concordati: Circ. AdE 8/E/2017 §1.1
   imuConc: 0.75,         // IMU al 75% per concordato, ovunque (no vincolo ATA) — L. 160/2019 art. 1 c. 760
   imuMolt: 1.05 * 160    // rendita +5% (L. 662/1996 art. 3 c. 48) × 160 cat. A non A/10 (L. 160/2019 c. 745); aliquote comunali: base 0,86% max 1,06% (c. 754), 1,14% solo ex maggiorazione TASI (c. 755)
 });
@@ -107,7 +109,8 @@ export function normalizza(p = {}) {
     manutBreve: p.manutBreve == null ? manut * 1.5 : nonNegativo(p.manutBreve),
     sfitto: quota(p.sfitto),
     unico: Boolean(p.unico),
-    alta: Boolean(p.alta)
+    alta: Boolean(p.alta),
+    medioConc: Boolean(p.medioConc)
   };
 }
 
@@ -134,15 +137,17 @@ export function calcolaScenari(grezzi) {
     consumi: consumiB
   };
 
-  // Medio termine (transitorio a canone libero): consumi scalati sui mesi abitati
+  // Medio termine (transitorio): consumi scalati sui mesi abitati;
+  // 10% se concordato con attestazione in comune agevolato (medioConc)
   const canM = p.canoneMedio;
   const ricM = canM * p.mesiMedio;
   const consumiM = consumiEffettivi(p.consumi, p.mesiMedio / 12);
+  const aliqM = p.medioConc ? FISCO.cedConc : FISCO.ced44;
   const medio = {
-    k: 'medio', aliq: FISCO.ced44,
+    k: 'medio', aliq: aliqM,
     ricavi: ricM,
     costi: ricM * 0.05 + consumiM + p.condominio + p.manutMedio,
-    ced: ricM * FISCO.ced44,
+    ced: ricM * aliqM,
     imu: imuPiena,
     canone: canM,
     consumi: consumiM
